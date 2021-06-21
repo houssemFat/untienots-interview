@@ -5,8 +5,12 @@
 // ....
 
 // spacing example, you can use a rem instead, for now, let's keep it simple
-$spacing: [ 1, 2, 4, 8, 12, 16, 24  ];
+$spacing: [0, 1, 2, 4, 6, 8, 12, 16, 24  ];
 
+
+$sizes: [ 8, 16, 24, 32, 48, 96, 128, 256, 512];
+
+$sizes_percent: [5, 4, 3, 2];
 
 
 //

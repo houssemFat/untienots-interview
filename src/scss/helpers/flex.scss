@@ -1,1 +1,26 @@
 // all flex and grid configure ....
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.center, .content-center {
+  justify-content: center;
+}
+
+.align-middle {
+  align-items: center;
+}
+
+//

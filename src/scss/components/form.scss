@@ -1,1 +1,8 @@
 // form related design
+.form-field {
+  width: 100%;
+}
+*, :after, :before {
+  box-sizing: border-box;
+  border: 0 solid #e2e8f0;
+}

@@ -1,0 +1,4 @@
+/* Font face definition */
+@mixin rounded($value) {
+  border-radius: $value + 'px';
+}

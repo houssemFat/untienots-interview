@@ -2,39 +2,49 @@
 @import "settings/sizes";
 
 @each $size in $spacing {
-  .p-l-#{$size} {
-    padding-left: $size + 'px';
+  .pl-#{$size} {
+    padding-left:  #{$size}px;
   }
-  .p-r-#{$size} {
-    padding-right: $size + 'px';
+  .pr-#{$size} {
+    padding-right: #{$size}px;
   }
-  .p-t-#{$size} {
-    padding-top: $size + 'px';
+  .pt-#{$size} {
+    padding-top:  #{$size}px;
   }
-  .p-b-#{$size} {
-    padding-bottom: $size + 'px';
+  .pb-#{$size} {
+    padding-bottom:  #{$size}px;
   }
   .p-#{$size} {
-    padding: $size + 'px';
+    padding:  #{$size}px;
+  }
+
+  .py-#{$size} {
+    padding-top:  #{$size}px;
+    padding-bottom:  #{$size}px;
+  }
+
+  .px-#{$size} {
+    padding-top:  #{$size}px;
+    padding-bottom:  #{$size}px;
   }
   // you can continue with p-x ....
 }
 
 @each $size in $spacing {
-  .m-l-#{$size} {
-    margin-left: $size + 'px';
+  .ml-#{$size} {
+    margin-left:  #{$size}px;
   }
-  .m-r-#{$size} {
-    margin-right: $size + 'px';
+  .mr-#{$size} {
+    margin-right:  #{$size}px;
   }
-  .m-t-#{$size} {
-    margin-top: $size + 'px';
+  .mt-#{$size} {
+    margin-top:  #{$size}px;
   }
-  .m-b-#{$size} {
-    margin-bottom: $size + 'px';
+  .mb-#{$size} {
+    margin-bottom:  #{$size}px;
   }
   .m-#{$size} {
-    margin: $size + 'px';
+    margin:  #{$size}px;
   }
   // you can continue with p-x ....
 }

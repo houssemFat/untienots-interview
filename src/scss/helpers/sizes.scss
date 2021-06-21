@@ -1,0 +1,31 @@
+@use "sass:math";
+// all related design helpers
+@import "settings/sizes";
+// height and width
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+// specif width
+@each $size in $sizes {
+  .w-#{$size} {
+    width: #{$size}px;
+  }
+  .h-#{$size} {
+    height: #{$size}px;
+  }
+}
+
+// specif width
+@each $size in $sizes_percent {
+  .w-1\/#{$size} {
+    width: #{math.percentage(1/$size)};
+  }
+  .h-1\/#{$size} {
+    height: #{math.percentage(1/$size)};
+  }
+}

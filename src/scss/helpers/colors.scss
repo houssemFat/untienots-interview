@@ -1,0 +1,22 @@
+// Defines typography values
+// example font-bold, font-light .....
+@import "settings/palette";
+.text-white{
+  color:$white;
+}
+.text-red{
+  color:$red;
+}
+// colors
+@each $value, $color in $purples {
+  .text-purple-#{$value} {
+    color: $color;
+  }
+}
+
+// colors
+@each $value, $color in $purples {
+  .bg-purple-#{$value} {
+    background: $color;
+  }
+}

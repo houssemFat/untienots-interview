@@ -1,23 +1,9 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <app-icon-definitions></app-icon-definitions>
-<router-outlet></router-outlet>
-<div style="text-align:center">
-  <h1>
-    Welcome to {{title}}!
-  </h1>
-  <img width="300" src="assets/images/logo-untie-nots.svg">
-</div>
-<h2>Main routes : </h2>
-<ul>
-  <li> <app-icon id="user" fillColor="blue"></app-icon>
-    Login
-  </li>
-  <li>
-    Home
-  </li>
-  <li>
-    Profile
-  </li>
-  <button class="app-cursor">Start</button>
-</ul>
-<app-footer></app-footer>
+<main class="flex h-full flex-col">
+  <div class="flex-grow">
+    <router-outlet></router-outlet>
+  </div>
+  <app-footer></app-footer>
+</main>
+
