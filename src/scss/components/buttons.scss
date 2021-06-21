@@ -1,0 +1,8 @@
+// buttons related design
+@import "helpers/design";
+@import "tools/mixins/design";
+
+button {
+  background: none;
+  @include rounded(1) ;
+}

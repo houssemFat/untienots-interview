@@ -5,7 +5,21 @@
     "outDir": "./out-tsc/spec",
     "types": [
       "jasmine"
-    ]
+    ],
+    "paths": {
+      "@app-shared/*": [
+        "./src/app/shared/*"
+      ],
+      "@app-icons/*": [
+        "./src/app/icons/*"
+      ],
+      "@app-core/*": [
+        "./src/app/core/*"
+      ],
+      "@app-features/*": [
+        "./src/app/features/*"
+      ]
+    }
   },
   "files": [
     "src/test.ts",
@@ -13,6 +27,7 @@
   ],
   "include": [
     "src/**/*.spec.ts",
+    "src/**/**/*.spec.ts",
     "src/**/*.d.ts"
   ]
 }

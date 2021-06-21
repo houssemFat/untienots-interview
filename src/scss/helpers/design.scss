@@ -1,0 +1,9 @@
+// all related design helpers
+@import "settings/sizes";
+
+@each $size in $spacing {
+  .rounded-#{$size} {
+    border-radius: $size + 'px';
+  }
+}
+
