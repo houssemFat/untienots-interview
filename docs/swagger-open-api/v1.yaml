@@ -1,19 +1,19 @@
-openapi: "3.0.2"
+openapi: 3.0.2
 info:
   version: 0.0.1
   title: UntieNots openapi spec
-  description: For api all calls api must contains the api key request header, except accounts login calls.
-  termsOfService: '...'
+  description: >-
+    For api all calls api must contains the api key request header, except
+    accounts login calls.
+  termsOfService: ...
   contact:
     name: UntieNots team
     email: dev@untienots.com
     url: 'https://www.untienots.com'
 servers:
-  - url: https://api.server.test/v1/
-
+  - url: 'https://api.server.test/v1/'
 paths:
-  # account routes
-  /accounts:
+  /accounts/signup:
     post:
       tags:
         - Accounts
@@ -21,16 +21,30 @@ paths:
         $ref: '#/components/requestBodies/CreateUserBody'
       responses:
         '200':
-          description: Create an account
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/requestBodies/CreateUserBody'
+          $ref: '#/components/responses/OkResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
-
+        default:
+          $ref: '#/components/responses/GeneralError'
+  /accounts/signin:
+    post:
+      tags:
+        - Accounts
+      requestBody:
+        $ref: '#/components/requestBodies/CreateSessionBody'
+      responses:
+        '200':
+          description: >
+            Successfully authenticated. The session ID is returned in a cookie
+            named `JSESSIONID`. You need to include this cookie in subsequent
+            requests.
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: JSESSIONID=abcde12345; Path=/; HttpOnly
+        '400':
+          $ref: '#/components/responses/BadRequest'
         default:
           $ref: '#/components/responses/GeneralError'
   /accounts/update-password:
@@ -42,23 +56,20 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/OkResponse'
-
-        '401':
-          $ref: '#/components/responses/NotAuthorized'
-
         '400':
           $ref: '#/components/responses/BadRequest'
-
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
         default:
           $ref: '#/components/responses/GeneralError'
       security:
         - app_auth:
-            - write:user-password
-
+            - 'write:user-password'
   /accounts/update-email:
-
     put:
-      description : Note that after this operation, a validation mail should be sent and the user may logged out
+      description: >-
+        Note that after this operation, a validation mail should be sent and the
+        user may logged out
       tags:
         - Accounts
       requestBody:
@@ -66,34 +77,28 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/OkResponse'
-
-        '401':
-          $ref: '#/components/responses/NotAuthorized'
-
         '400':
           $ref: '#/components/responses/BadRequest'
-
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
         default:
           $ref: '#/components/responses/GeneralError'
       security:
         - app_auth:
-            - write:user-email
-
-
-
+            - 'write:user-email'
   /movies:
     get:
       tags:
         - Movies
-      description: |
-        Returns movies. The backend will be enable to identify the role of current authenticated user. Regarding the role of user the backend will serve either the list of all movies or only ....
+      description: >
+        Returns movies. The backend will be enable to identify the role of
+        current authenticated user. Regarding the role of user the backend will
+        serve either the list of all movies or only active movies ....
       operationId: getMovies
       parameters:
         - $ref: '#/components/parameters/search_query'
         - $ref: '#/components/parameters/per_page'
         - $ref: '#/components/parameters/sort_by'
-
-
       responses:
         '200':
           description: Movies list
@@ -109,26 +114,22 @@ paths:
           description: unexpected error
       security:
         - app_auth:
-            - read:movies
-
-  /movies/{movieId}:
+            - 'read:movies'
+  '/movies/{movieId}':
     put:
       tags:
         - Movies
       description: |
         Update status and price of a movie
       operationId: UpdateMovie
-
       parameters:
         - name: movieId
           in: path
-          required : true
+          required: true
           schema:
             type: string
-
       requestBody:
         $ref: '#/components/requestBodies/UpdateItemBody'
-
       responses:
         '200':
           description: Plan response
@@ -138,30 +139,20 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Movie'
-
-        '401':
-          $ref: '#/components/responses/NotAuthorized'
-
         '400':
           $ref: '#/components/responses/BadRequest'
-
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-
         default:
           $ref: '#/components/responses/GeneralError'
-
       security:
         - app_auth:
-            - write:movies
-            - read:movies
-
+            - 'write:movies'
+            - 'read:movies'
 components:
-
   schemas:
-
-    # http responses
-
     GeneralError:
       type: object
       properties:
@@ -170,7 +161,6 @@ components:
           format: int32
         message:
           type: string
-
     OkResponse:
       type: object
       properties:
@@ -179,10 +169,7 @@ components:
           default: 200
         message:
           type: string
-          default: 'OK'
-
-    # movies schemas & specs
-
+          default: OK
     Movie:
       required:
         - title
@@ -195,19 +182,12 @@ components:
           type: string
         thumbnail:
           type: string
-          format : url
-        price :
-          type : number
-          format : number
-
-        # contains all related info, review, producer, category
+          format: url
+        price:
+          type: number
+          format: number
         info:
-          type : object
-        actors:
-          type: array
-          items:
-            $ref: '#/components/schemas/Actor'
-
+          type: object
     UpdateMovieBody:
       required:
         - status
@@ -218,26 +198,15 @@ components:
           format: number
         status:
           type: string
-          enum: [true, false]
-
+          enum:
+            - true
+            - false
     MoviesList:
       allOf:
         - $ref: '#/components/schemas/Movie'
         - required:
             - id
             - name
-
-    # actor schemas & specs
-    Actor:
-      required:
-        - name
-        - photo
-      properties:
-        name:
-          type: string
-        photo:
-          type: string
-    # user actions schemas & specs
     CreateUserBody:
       required:
         - email
@@ -257,9 +226,6 @@ components:
         passwordConfirm:
           type: string
           format: password
-
-    # user password update
-
     UpdateUserEmailBody:
       required:
         - currentPassword
@@ -271,9 +237,17 @@ components:
         newEmail:
           type: string
           format: password
-
-    # user password update
-
+    CreateSessionBody:
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
     UpdateUserPasswordBody:
       required:
         - currentPassword
@@ -299,7 +273,6 @@ components:
         default: 10
         type: number
         format: int32
-
     sort_by:
       name: sort_by
       in: query
@@ -307,57 +280,54 @@ components:
       required: false
       schema:
         type: string
-
     search_query:
       name: q
       in: query
-      description: Order ['DESC', 'ASC']
+      description: 'Order [''DESC'', ''ASC'']'
       required: false
       schema:
         type: string
-        enum: ['DESC', 'ASC']
-
+        enum:
+          - DESC
+          - ASC
   requestBodies:
-    # movies requestbodies, post & put
-    UpdateItemBody :
+    UpdateItemBody:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/UpdateMovieBody'
-
-    # user requestbodies, post & put
-
-    CreateUserBody :
+    CreateUserBody:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/CreateUserBody'
-
-    UpdateUserPasswordBody :
+    CreateSessionBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateSessionBody'
+    UpdateUserPasswordBody:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/UpdateUserPasswordBody'
-
-    UpdateUserEmailBody :
+    UpdateUserEmailBody:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/UpdateUserEmailBody'
-
-
   responses:
     NotFound:
       description: Entity not found.
     NotAuthorized:
       description: Not authorized.
     OkResponse:
-      description : Ok response
+      description: Ok response
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/OkResponse'
-    BadRequest :
+    BadRequest:
       description: Bad request.
       content:
         application/json:
@@ -369,15 +339,14 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/GeneralError'
-
   securitySchemes:
     app_auth:
       type: oauth2
       flows:
         implicit:
-          authorizationUrl: http://example.org/api/oauth/dialog
+          authorizationUrl: 'http://example.org/api/oauth/dialog'
           scopes:
-            write:movies: modify movies
-            read:movies: read movies
-            write:user-password : modify password
-            write:user-email: modify user email
+            'write:movies': modify movies
+            'read:movies': read movies
+            'write:user-password': modify password
+            'write:user-email': modify user email

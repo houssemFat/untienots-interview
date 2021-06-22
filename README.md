@@ -24,7 +24,7 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 
 ## Open api spec
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](./docs/swagger-open-api/v1.yaml) page.
+[See spec](./docs/swagger-open-api/v1.yaml) page.
 
 
 ## Further help
