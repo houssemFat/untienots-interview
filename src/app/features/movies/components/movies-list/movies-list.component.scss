@@ -1,0 +1,29 @@
+.box {
+  height: 0;
+  position: relative;
+  overflow: hidden;
+  padding: 150% 0 0;
+}
+.cover {
+  position: absolute;
+  background-size: cover;
+  left: 0;
+  right: 0;
+  /* Add the blur effect */
+  bottom: 0;
+  top: 0;
+}
+.action {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10%;
+  text-shadow: 0 1px 0 #ccc;
+  z-index: 11;
+  text-align: center;
+}

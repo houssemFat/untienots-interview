@@ -1,12 +1,19 @@
 // Defines typography values
 // example font-bold, font-light .....
 @import "settings/palette";
-.text-white{
-  color:$white;
+
+.text-white {
+  color: $white;
 }
-.text-red{
-  color:$red;
+
+.text-yellow {
+  color: $yellow;
 }
+
+.text-red {
+  color: $red;
+}
+
 // colors
 @each $value, $color in $purples {
   .text-purple-#{$value} {

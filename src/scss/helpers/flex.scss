@@ -6,6 +6,10 @@
 .flex-col {
   flex-direction: column;
 }
+.flex-wrap {
+
+  flex-wrap: wrap;
+}
 
 .justify-between {
   justify-content: space-between;
@@ -15,7 +19,7 @@
   flex-grow: 1;
 }
 
-.center, .content-center {
+.center, .content-center , .justify-center{
   justify-content: center;
 }
 

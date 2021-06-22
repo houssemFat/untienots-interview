@@ -1,0 +1,25 @@
+<div class="flex flex-wrap justify-center">
+  <div *ngFor="let movie of moviesDataService.moviesList " class="p-12">
+    <div class="box w-256 rounded-12 ">
+      <div class="cover"  style="background-image: url('/assets/images/movies/{{movie.illustration}}')">
+      </div>
+      <div class="action">
+        <label class="toggle">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <!--<img class="box-image" src="/assets/images/movies/{{movie.illustration}}"/>-->
+      <div class="content">
+        <div class="text-white pb-12 font-bold text-medium">
+          {{movie.name}}
+        </div>
+        <div class="text-yellow  font-bold text-medium">
+          {{movie.price}} €
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>

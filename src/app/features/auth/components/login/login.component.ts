@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthApiService } from "@app-core/services/api/auth.api.service";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-auth-login',
@@ -21,7 +22,7 @@ export class LoginComponent implements OnInit {
    */
   error = "";
 
-  constructor(private authApiService: AuthApiService) {
+  constructor(private authApiService: AuthApiService, private router : Router) {
   }
 
   ngOnInit(): void {
@@ -69,6 +70,7 @@ export class LoginComponent implements OnInit {
           this.error = "Something went wrong, please try again ."
         }, 2000)
       }
+      this.router.navigateByUrl('/home');
     }, (err) => {
 
     }, () => {

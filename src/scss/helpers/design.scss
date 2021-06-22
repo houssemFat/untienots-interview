@@ -13,11 +13,13 @@
     border-radius: #{$size}px;
   }
 }
+
 @media only screen and (max-width: 600px) {
   .xs\:max-h-full {
     background-color: lightblue;
   }
 }
+
 // border 1 px
 .border {
   border-width: 1px !important;
@@ -31,4 +33,16 @@
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06) !important;
 }
 
-// add other shadow values
+// positions , u can use array also
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+// z indexes , u can use array also
+.z-1 {
+  z-index: 1;
+}

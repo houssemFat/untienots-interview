@@ -101,7 +101,7 @@ export class MockInterceptor implements HttpInterceptor {
       return of(new HttpResponse({status: response ? 200 : 404, body: response ? response : null}));
     }
     if (req.url.indexOf('movies') > -1) {
-      return of(new HttpResponse({status: 200, body: MOVIES_MOCK.filter(e => true)}));
+      return of(new HttpResponse({status: 200, body: {list : MOVIES_MOCK.filter(e => true)}}));
     }
     return next.handle(req);
   }
