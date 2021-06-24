@@ -18,11 +18,11 @@ export class LoginComponent implements OnInit {
    */
   isLoading = false;
   /**
-   * Indicates if we are connecting to the server
+   * Indicates if we there is an error coming back from server
    */
   error = "";
 
-  constructor(private authApiService: AuthApiService, private router : Router) {
+  constructor(private authApiService: AuthApiService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -38,7 +38,9 @@ export class LoginComponent implements OnInit {
         Validators.required
       ]),
       password: new FormControl('', [
-        Validators.required
+        Validators.required,
+        Validators.pattern('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$')
+
       ]),
       keepMeLoggedIn: new FormControl(),
     });
@@ -56,7 +58,9 @@ export class LoginComponent implements OnInit {
     return this.loginForm.get('keepMeLoggedIn');
   }
 
-
+  /**
+   * Call submit
+   */
   onFormSubmit() {
     this.isLoading = true;
     this.error = "";
@@ -65,19 +69,20 @@ export class LoginComponent implements OnInit {
       email: this.email?.value,
       keep_me_logged_in: String(!!this.keepMeLoggedIn?.value),
     }).subscribe((res) => {
-      if(!res){
-        setTimeout(() => {
-          this.error = "Something went wrong, please try again ."
-        }, 2000)
-      }
-      this.router.navigateByUrl('/home');
+      setTimeout(() => {
+        if (!res) {
+          this.error = "Something went wrong, please try again .";
+          return;
+        }
+        this.router.navigateByUrl('/home');
+      }, 1000);
+
     }, (err) => {
 
     }, () => {
       setTimeout(() => {
         this.isLoading = false;
-      }, 2000)
-
+      }, 1000)
     })
   }
 }

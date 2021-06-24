@@ -5,9 +5,11 @@ import { CommonModule } from "@angular/common";
 import { LoginComponent } from "@app-features/auth/components/login/login.component";
 import { ReactiveFormsModule } from "@angular/forms";
 import { IconsModule } from "@app-icons/icons.module";
+
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, CoreModule, AuthRoutingModule, IconsModule],
-  declarations : [LoginComponent]
+  declarations: [LoginComponent],
+  exports: [LoginComponent]
 })
 
 export class AuthModule {

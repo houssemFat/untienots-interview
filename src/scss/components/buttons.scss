@@ -1,8 +1,12 @@
 // buttons related design
 @import "helpers/design";
+@import "settings/palette";
 @import "tools/mixins/design";
 
 button {
   background: none;
   @include rounded(1) ;
+}
+button:disabled {
+  background: $gray;
 }

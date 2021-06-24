@@ -1,0 +1,3058 @@
+{
+    "pipes": [],
+    "interfaces": [
+        {
+            "name": "HttpOptions",
+            "id": "interface-HttpOptions-f3c172f65afb8e2c7988b99c05a66afa",
+            "file": "src/app/core/services/api/base.api.service.ts",
+            "type": "interface",
+            "sourceCode": "import { HttpClient, HttpHeaders } from '@angular/common/http';\r\nimport { Observable } from \"rxjs\";\r\nimport { environment } from \"../../../../environments/environment\";\r\nimport { Injectable } from \"@angular/core\";\r\n\r\n// you can modify to fit your needs\r\ninterface HttpOptions {\r\n  body?: any;\r\n  headers?: HttpHeaders | {\r\n    [header: string]: string | string[];\r\n  };\r\n  requireAuth?: boolean\r\n  // add missed staff here if needed\r\n}\r\n@Injectable()\r\nexport class BaseApiService {\r\n\r\n  constructor(private http: HttpClient) {\r\n  }\r\n\r\n  /**\r\n   */\r\n  get(path: string, options: HttpOptions = {}): Observable<any> {\r\n    return this._sendRequest('GET', path, options);\r\n  }\r\n\r\n  /**\r\n   *\r\n   *\r\n   */\r\n  post(path: string, body: any = {}, options: HttpOptions = {}): Observable<any> {\r\n    const httpHeadersObject = Object.assign({}, {body}, options);\r\n    return this._sendRequest('POST', path, httpHeadersObject);\r\n  }\r\n\r\n  /**\r\n   *\r\n   */\r\n  private static _getFullPath(path: string): string {\r\n    return environment.API_HOST + '/' + path;\r\n  }\r\n\r\n  /**\r\n   * This function will be invoked internally.\r\n   * Options allow for http header customisation, object key value\r\n   */\r\n  private _sendRequest(method: string, path: string, options: HttpOptions = {}): Observable<any> {\r\n\r\n    path = BaseApiService._getFullPath(path);\r\n    // inject ath\r\n    if (options.requireAuth) {\r\n      options.headers = this.appendToken(options.headers);\r\n    }\r\n    return this.http.request(method, path, options);\r\n  }\r\n\r\n  /**\r\n   * TODO, header can be an object or a HttpHeaders,\r\n   * clarify more the method\r\n   * Function to set header for auth purpose\r\n   * example :\r\n   * Token\r\n   * Request ID ......\r\n   */\r\n  private appendToken(headers: any): HttpHeaders {\r\n    return (headers || new HttpHeaders()).set('Authorization', '');\r\n  }\r\n\r\n  /**\r\n   * Add other custom headers\r\n   * request ids ....\r\n   * progress\r\n   * withCredential\r\n   */\r\n  private setOthersHeaders() {\r\n\r\n  }\r\n}\r\n",
+            "properties": [
+                {
+                    "name": "body",
+                    "type": "any",
+                    "optional": true,
+                    "description": "",
+                    "line": 8
+                },
+                {
+                    "name": "headers",
+                    "type": "HttpHeaders | literal type",
+                    "optional": true,
+                    "description": "",
+                    "line": 9
+                },
+                {
+                    "name": "requireAuth",
+                    "type": "boolean",
+                    "optional": true,
+                    "description": "",
+                    "line": 12
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 150,
+            "methods": []
+        },
+        {
+            "name": "ListMoviesParams",
+            "id": "interface-ListMoviesParams-2f17c6cc98eca7e8895806a7514e86b9",
+            "file": "src/app/features/movies/services/api/movies.api.service.ts",
+            "type": "interface",
+            "sourceCode": "import { Injectable } from '@angular/core';\r\nimport { Observable } from \"rxjs\";\r\nimport { BaseApiService } from \"@app-core/services/api/base.api.service\";\r\nimport { API_MOVIES_ROUTES } from \"@app-shared/constants/api.routes\";\r\n\r\nexport interface ListMoviesParams {\r\n  page?: string;\r\n  q?: string;\r\n}\r\n\r\n@Injectable({\r\n  providedIn: 'root'\r\n})\r\nexport class MoviesApiService extends BaseApiService {\r\n\r\n  /**\r\n   *\r\n   * @param body\r\n   */\r\n  list(body: ListMoviesParams): Observable<any> {\r\n    let path = [API_MOVIES_ROUTES.BASE, API_MOVIES_ROUTES.LIST_PATH].join('/') ;\r\n    path += body.page ? ('page=' + body.page ): '';\r\n    path += body.q ? ('q=' + body.q ): '';\r\n    return this.get(path);\r\n  }\r\n\r\n\r\n  // all other calls,\r\n  // forgot password\r\n  // register\r\n  // reset password ....\r\n\r\n\r\n}\r\n",
+            "properties": [
+                {
+                    "name": "page",
+                    "type": "string",
+                    "optional": true,
+                    "description": "",
+                    "line": 7
+                },
+                {
+                    "name": "q",
+                    "type": "string",
+                    "optional": true,
+                    "description": "",
+                    "line": 8
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 150,
+            "methods": []
+        },
+        {
+            "name": "LoginFormParams",
+            "id": "interface-LoginFormParams-5a47c523d55a1abce1953232ffa9828b",
+            "file": "src/app/core/services/api/auth.api.service.ts",
+            "type": "interface",
+            "sourceCode": "import { Injectable } from '@angular/core';\r\nimport { BaseApiService } from './base.api.service';\r\nimport { Observable } from \"rxjs\";\r\nimport { API_AUTH_ROUTES } from \"../../../shared/constants/api.routes\";\r\n\r\nexport interface LoginFormParams {\r\n  email: string;\r\n  password: string;\r\n  keep_me_logged_in: string;\r\n}\r\n\r\n@Injectable({\r\n  providedIn: 'root'\r\n})\r\nexport class AuthApiService extends BaseApiService {\r\n\r\n  /**\r\n   *\r\n   * @param body\r\n   */\r\n  login(body: LoginFormParams): Observable<any> {\r\n    return this.post([API_AUTH_ROUTES.BASE, API_AUTH_ROUTES.LOGIN_PATH].join('/'), body);\r\n  }\r\n\r\n\r\n\r\n  // all other calls,\r\n  // forgot password\r\n  // register\r\n  // reset password ....\r\n\r\n\r\n}\r\n",
+            "properties": [
+                {
+                    "name": "email",
+                    "type": "string",
+                    "optional": false,
+                    "description": "",
+                    "line": 7
+                },
+                {
+                    "name": "keep_me_logged_in",
+                    "type": "string",
+                    "optional": false,
+                    "description": "",
+                    "line": 9
+                },
+                {
+                    "name": "password",
+                    "type": "string",
+                    "optional": false,
+                    "description": "",
+                    "line": 8
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 150,
+            "methods": []
+        }
+    ],
+    "injectables": [
+        {
+            "name": "AuthApiService",
+            "id": "injectable-AuthApiService-5a47c523d55a1abce1953232ffa9828b",
+            "file": "src/app/core/services/api/auth.api.service.ts",
+            "properties": [],
+            "methods": [
+                {
+                    "name": "login",
+                    "args": [
+                        {
+                            "name": "body",
+                            "type": "LoginFormParams"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "Observable<any>",
+                    "typeParameters": [],
+                    "line": 21,
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": {
+                                "pos": 442,
+                                "end": 446,
+                                "flags": 0,
+                                "escapedText": "body"
+                            },
+                            "type": "LoginFormParams",
+                            "tagName": {
+                                "pos": 436,
+                                "end": 441,
+                                "flags": 0,
+                                "escapedText": "param"
+                            },
+                            "comment": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "_getFullPath",
+                    "args": [
+                        {
+                            "name": "path",
+                            "type": "string"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "string",
+                    "typeParameters": [],
+                    "line": 39,
+                    "description": "",
+                    "modifierKind": [
+                        112,
+                        115
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "path",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ],
+                    "inheritance": {
+                        "file": "BaseApiService"
+                    }
+                },
+                {
+                    "name": "_sendRequest",
+                    "args": [
+                        {
+                            "name": "method",
+                            "type": "string"
+                        },
+                        {
+                            "name": "path",
+                            "type": "string"
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "Observable<any>",
+                    "typeParameters": [],
+                    "line": 47,
+                    "description": "<p>This function will be invoked internally.\nOptions allow for http header customisation, object key value</p>\n",
+                    "modifierKind": [
+                        112
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "method",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "path",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ],
+                    "inheritance": {
+                        "file": "BaseApiService"
+                    }
+                },
+                {
+                    "name": "appendToken",
+                    "args": [
+                        {
+                            "name": "headers",
+                            "type": "any"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "HttpHeaders",
+                    "typeParameters": [],
+                    "line": 65,
+                    "description": "<p>TODO, header can be an object or a HttpHeaders,\nclarify more the method\nFunction to set header for auth purpose\nexample :\nToken\nRequest ID ......</p>\n",
+                    "modifierKind": [
+                        112
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "headers",
+                            "type": "any",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ],
+                    "inheritance": {
+                        "file": "BaseApiService"
+                    }
+                },
+                {
+                    "name": "get",
+                    "args": [
+                        {
+                            "name": "path",
+                            "type": "string"
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "Observable<any>",
+                    "typeParameters": [],
+                    "line": 23,
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": "path",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ],
+                    "inheritance": {
+                        "file": "BaseApiService"
+                    }
+                },
+                {
+                    "name": "post",
+                    "args": [
+                        {
+                            "name": "path",
+                            "type": "string"
+                        },
+                        {
+                            "name": "body",
+                            "type": "any",
+                            "defaultValue": "{}"
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "Observable<any>",
+                    "typeParameters": [],
+                    "line": 31,
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": "path",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "body",
+                            "type": "any",
+                            "defaultValue": "{}",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ],
+                    "inheritance": {
+                        "file": "BaseApiService"
+                    }
+                },
+                {
+                    "name": "setOthersHeaders",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 75,
+                    "description": "<p>Add other custom headers\nrequest ids ....\nprogress\nwithCredential</p>\n",
+                    "modifierKind": [
+                        112
+                    ],
+                    "inheritance": {
+                        "file": "BaseApiService"
+                    }
+                }
+            ],
+            "description": "",
+            "sourceCode": "import { Injectable } from '@angular/core';\r\nimport { BaseApiService } from './base.api.service';\r\nimport { Observable } from \"rxjs\";\r\nimport { API_AUTH_ROUTES } from \"../../../shared/constants/api.routes\";\r\n\r\nexport interface LoginFormParams {\r\n  email: string;\r\n  password: string;\r\n  keep_me_logged_in: string;\r\n}\r\n\r\n@Injectable({\r\n  providedIn: 'root'\r\n})\r\nexport class AuthApiService extends BaseApiService {\r\n\r\n  /**\r\n   *\r\n   * @param body\r\n   */\r\n  login(body: LoginFormParams): Observable<any> {\r\n    return this.post([API_AUTH_ROUTES.BASE, API_AUTH_ROUTES.LOGIN_PATH].join('/'), body);\r\n  }\r\n\r\n\r\n\r\n  // all other calls,\r\n  // forgot password\r\n  // register\r\n  // reset password ....\r\n\r\n\r\n}\r\n",
+            "extends": "BaseApiService",
+            "type": "injectable"
+        },
+        {
+            "name": "BaseApiService",
+            "id": "injectable-BaseApiService-f3c172f65afb8e2c7988b99c05a66afa",
+            "file": "src/app/core/services/api/base.api.service.ts",
+            "properties": [],
+            "methods": [
+                {
+                    "name": "_getFullPath",
+                    "args": [
+                        {
+                            "name": "path",
+                            "type": "string"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "string",
+                    "typeParameters": [],
+                    "line": 39,
+                    "description": "",
+                    "modifierKind": [
+                        112,
+                        115
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "path",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "_sendRequest",
+                    "args": [
+                        {
+                            "name": "method",
+                            "type": "string"
+                        },
+                        {
+                            "name": "path",
+                            "type": "string"
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "Observable<any>",
+                    "typeParameters": [],
+                    "line": 47,
+                    "description": "<p>This function will be invoked internally.\nOptions allow for http header customisation, object key value</p>\n",
+                    "modifierKind": [
+                        112
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "method",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "path",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "appendToken",
+                    "args": [
+                        {
+                            "name": "headers",
+                            "type": "any"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "HttpHeaders",
+                    "typeParameters": [],
+                    "line": 65,
+                    "description": "<p>TODO, header can be an object or a HttpHeaders,\nclarify more the method\nFunction to set header for auth purpose\nexample :\nToken\nRequest ID ......</p>\n",
+                    "modifierKind": [
+                        112
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "headers",
+                            "type": "any",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "get",
+                    "args": [
+                        {
+                            "name": "path",
+                            "type": "string"
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "Observable<any>",
+                    "typeParameters": [],
+                    "line": 23,
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": "path",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "post",
+                    "args": [
+                        {
+                            "name": "path",
+                            "type": "string"
+                        },
+                        {
+                            "name": "body",
+                            "type": "any",
+                            "defaultValue": "{}"
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "Observable<any>",
+                    "typeParameters": [],
+                    "line": 31,
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": "path",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "body",
+                            "type": "any",
+                            "defaultValue": "{}",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "setOthersHeaders",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 75,
+                    "description": "<p>Add other custom headers\nrequest ids ....\nprogress\nwithCredential</p>\n",
+                    "modifierKind": [
+                        112
+                    ]
+                }
+            ],
+            "description": "",
+            "sourceCode": "import { HttpClient, HttpHeaders } from '@angular/common/http';\r\nimport { Observable } from \"rxjs\";\r\nimport { environment } from \"../../../../environments/environment\";\r\nimport { Injectable } from \"@angular/core\";\r\n\r\n// you can modify to fit your needs\r\ninterface HttpOptions {\r\n  body?: any;\r\n  headers?: HttpHeaders | {\r\n    [header: string]: string | string[];\r\n  };\r\n  requireAuth?: boolean\r\n  // add missed staff here if needed\r\n}\r\n@Injectable()\r\nexport class BaseApiService {\r\n\r\n  constructor(private http: HttpClient) {\r\n  }\r\n\r\n  /**\r\n   */\r\n  get(path: string, options: HttpOptions = {}): Observable<any> {\r\n    return this._sendRequest('GET', path, options);\r\n  }\r\n\r\n  /**\r\n   *\r\n   *\r\n   */\r\n  post(path: string, body: any = {}, options: HttpOptions = {}): Observable<any> {\r\n    const httpHeadersObject = Object.assign({}, {body}, options);\r\n    return this._sendRequest('POST', path, httpHeadersObject);\r\n  }\r\n\r\n  /**\r\n   *\r\n   */\r\n  private static _getFullPath(path: string): string {\r\n    return environment.API_HOST + '/' + path;\r\n  }\r\n\r\n  /**\r\n   * This function will be invoked internally.\r\n   * Options allow for http header customisation, object key value\r\n   */\r\n  private _sendRequest(method: string, path: string, options: HttpOptions = {}): Observable<any> {\r\n\r\n    path = BaseApiService._getFullPath(path);\r\n    // inject ath\r\n    if (options.requireAuth) {\r\n      options.headers = this.appendToken(options.headers);\r\n    }\r\n    return this.http.request(method, path, options);\r\n  }\r\n\r\n  /**\r\n   * TODO, header can be an object or a HttpHeaders,\r\n   * clarify more the method\r\n   * Function to set header for auth purpose\r\n   * example :\r\n   * Token\r\n   * Request ID ......\r\n   */\r\n  private appendToken(headers: any): HttpHeaders {\r\n    return (headers || new HttpHeaders()).set('Authorization', '');\r\n  }\r\n\r\n  /**\r\n   * Add other custom headers\r\n   * request ids ....\r\n   * progress\r\n   * withCredential\r\n   */\r\n  private setOthersHeaders() {\r\n\r\n  }\r\n}\r\n",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [
+                    {
+                        "name": "http",
+                        "type": "HttpClient"
+                    }
+                ],
+                "line": 16,
+                "jsdoctags": [
+                    {
+                        "name": "http",
+                        "type": "HttpClient",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "type": "injectable"
+        },
+        {
+            "name": "BaseModel",
+            "id": "injectable-BaseModel-1005c303ddae4bec90ec0ad3dbea58dc",
+            "file": "src/app/core/models/base.model.ts",
+            "properties": [],
+            "methods": [
+                {
+                    "name": "serialize",
+                    "args": [
+                        {
+                            "name": "path",
+                            "type": "Array<string>"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "any",
+                    "typeParameters": [],
+                    "line": 12,
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": "path",
+                            "type": "Array<string>",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "description": "",
+            "sourceCode": "import { Injectable } from '@angular/core';\r\n\r\n@Injectable()\r\nexport class BaseModel {\r\n\r\n  constructor() {\r\n  }\r\n\r\n  /**\r\n   *\r\n   */\r\n  serialize(path: Array<string>): any {\r\n    // TODO\r\n    throw new Error('Must be implemented');\r\n  }\r\n\r\n}\r\n",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 4
+            },
+            "type": "injectable"
+        },
+        {
+            "name": "LoggerService",
+            "id": "injectable-LoggerService-027edafe0e179e85e0a7efd0a3f54aa1",
+            "file": "src/app/core/services/common/logger.service.ts",
+            "properties": [],
+            "methods": [
+                {
+                    "name": "_print",
+                    "args": [
+                        {
+                            "name": "type",
+                            "type": "MessageType"
+                        },
+                        {
+                            "name": "message",
+                            "type": "string"
+                        },
+                        {
+                            "name": "options",
+                            "type": "any"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 48,
+                    "description": "<p>Display or do what you want (api, use another service ...)</p>\n",
+                    "modifierKind": [
+                        112
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "type",
+                            "type": "MessageType",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "message",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "any",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "_printToConsole",
+                    "args": [
+                        {
+                            "name": "type",
+                            "type": "MessageType"
+                        },
+                        {
+                            "name": "message",
+                            "type": "string"
+                        },
+                        {
+                            "name": "options",
+                            "type": "any"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 60,
+                    "description": "<p>You can print to console with design\n<a href=\"https://developer.mozilla.org/en-US/docs/Web/API/console#usage\">https://developer.mozilla.org/en-US/docs/Web/API/console#usage</a></p>\n",
+                    "modifierKind": [
+                        112
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "type",
+                            "type": "MessageType",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "message",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "any",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "error",
+                    "args": [
+                        {
+                            "name": "message",
+                            "type": "string"
+                        },
+                        {
+                            "name": "options",
+                            "type": "any"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 25,
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": "message",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "any",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "info",
+                    "args": [
+                        {
+                            "name": "message",
+                            "type": "string"
+                        },
+                        {
+                            "name": "options",
+                            "type": "any"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 33,
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": "message",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "any",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "warn",
+                    "args": [
+                        {
+                            "name": "message",
+                            "type": "string"
+                        },
+                        {
+                            "name": "options",
+                            "type": "any"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 41,
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": "message",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "any",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "description": "",
+            "sourceCode": "import { environment } from \"../../../../environments/environment\";\r\nimport { Injectable } from '@angular/core';\r\n\r\nenum MessageType {\r\n  Error = 1,\r\n  Warning,\r\n  Info,\r\n  Any,\r\n}\r\n\r\n@Injectable({\r\n  providedIn: 'root'\r\n})\r\nexport class LoggerService {\r\n\r\n  constructor() {\r\n  }\r\n\r\n  /**\r\n   *\r\n   *\r\n   */\r\n  error(message: string, options: any) {\r\n    this._print(MessageType.Error, message, options);\r\n  }\r\n\r\n  /**\r\n   *\r\n   *\r\n   */\r\n  info(message: string, options: any) {\r\n    this._print(MessageType.Info, message, options);\r\n  }\r\n\r\n  /**\r\n   *\r\n   *\r\n   */\r\n  warn(message: string, options: any) {\r\n    this._print(MessageType.Warning, message, options);\r\n  }\r\n\r\n  /**\r\n   * Display or do what you want (api, use another service ...)\r\n   */\r\n  private _print(type: MessageType, message: string, options: any) {\r\n    if (environment.production) {\r\n      // you can send this info to backend or any other provider to collect analytics\r\n    } else {\r\n      this._printToConsole(type, message, options);\r\n    }\r\n  }\r\n\r\n  /**\r\n   * You can print to console with design\r\n   * https://developer.mozilla.org/en-US/docs/Web/API/console#usage\r\n   */\r\n  private _printToConsole(type: MessageType, message: string, options: any) {\r\n    // TODO\r\n  }\r\n}\r\n",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 16
+            },
+            "type": "injectable"
+        },
+        {
+            "name": "MoviesApiService",
+            "id": "injectable-MoviesApiService-2f17c6cc98eca7e8895806a7514e86b9",
+            "file": "src/app/features/movies/services/api/movies.api.service.ts",
+            "properties": [],
+            "methods": [
+                {
+                    "name": "list",
+                    "args": [
+                        {
+                            "name": "body",
+                            "type": "ListMoviesParams"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "Observable<any>",
+                    "typeParameters": [],
+                    "line": 20,
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": {
+                                "pos": 428,
+                                "end": 432,
+                                "flags": 0,
+                                "escapedText": "body"
+                            },
+                            "type": "ListMoviesParams",
+                            "tagName": {
+                                "pos": 422,
+                                "end": 427,
+                                "flags": 0,
+                                "escapedText": "param"
+                            },
+                            "comment": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "_getFullPath",
+                    "args": [
+                        {
+                            "name": "path",
+                            "type": "string"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "string",
+                    "typeParameters": [],
+                    "line": 39,
+                    "description": "",
+                    "modifierKind": [
+                        112,
+                        115
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "path",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ],
+                    "inheritance": {
+                        "file": "BaseApiService"
+                    }
+                },
+                {
+                    "name": "_sendRequest",
+                    "args": [
+                        {
+                            "name": "method",
+                            "type": "string"
+                        },
+                        {
+                            "name": "path",
+                            "type": "string"
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "Observable<any>",
+                    "typeParameters": [],
+                    "line": 47,
+                    "description": "<p>This function will be invoked internally.\nOptions allow for http header customisation, object key value</p>\n",
+                    "modifierKind": [
+                        112
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "method",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "path",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ],
+                    "inheritance": {
+                        "file": "BaseApiService"
+                    }
+                },
+                {
+                    "name": "appendToken",
+                    "args": [
+                        {
+                            "name": "headers",
+                            "type": "any"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "HttpHeaders",
+                    "typeParameters": [],
+                    "line": 65,
+                    "description": "<p>TODO, header can be an object or a HttpHeaders,\nclarify more the method\nFunction to set header for auth purpose\nexample :\nToken\nRequest ID ......</p>\n",
+                    "modifierKind": [
+                        112
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "headers",
+                            "type": "any",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ],
+                    "inheritance": {
+                        "file": "BaseApiService"
+                    }
+                },
+                {
+                    "name": "get",
+                    "args": [
+                        {
+                            "name": "path",
+                            "type": "string"
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "Observable<any>",
+                    "typeParameters": [],
+                    "line": 23,
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": "path",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ],
+                    "inheritance": {
+                        "file": "BaseApiService"
+                    }
+                },
+                {
+                    "name": "post",
+                    "args": [
+                        {
+                            "name": "path",
+                            "type": "string"
+                        },
+                        {
+                            "name": "body",
+                            "type": "any",
+                            "defaultValue": "{}"
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "Observable<any>",
+                    "typeParameters": [],
+                    "line": 31,
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": "path",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "body",
+                            "type": "any",
+                            "defaultValue": "{}",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "type": "HttpOptions",
+                            "defaultValue": "{}",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ],
+                    "inheritance": {
+                        "file": "BaseApiService"
+                    }
+                },
+                {
+                    "name": "setOthersHeaders",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 75,
+                    "description": "<p>Add other custom headers\nrequest ids ....\nprogress\nwithCredential</p>\n",
+                    "modifierKind": [
+                        112
+                    ],
+                    "inheritance": {
+                        "file": "BaseApiService"
+                    }
+                }
+            ],
+            "description": "",
+            "sourceCode": "import { Injectable } from '@angular/core';\r\nimport { Observable } from \"rxjs\";\r\nimport { BaseApiService } from \"@app-core/services/api/base.api.service\";\r\nimport { API_MOVIES_ROUTES } from \"@app-shared/constants/api.routes\";\r\n\r\nexport interface ListMoviesParams {\r\n  page?: string;\r\n  q?: string;\r\n}\r\n\r\n@Injectable({\r\n  providedIn: 'root'\r\n})\r\nexport class MoviesApiService extends BaseApiService {\r\n\r\n  /**\r\n   *\r\n   * @param body\r\n   */\r\n  list(body: ListMoviesParams): Observable<any> {\r\n    let path = [API_MOVIES_ROUTES.BASE, API_MOVIES_ROUTES.LIST_PATH].join('/') ;\r\n    path += body.page ? ('page=' + body.page ): '';\r\n    path += body.q ? ('q=' + body.q ): '';\r\n    return this.get(path);\r\n  }\r\n\r\n\r\n  // all other calls,\r\n  // forgot password\r\n  // register\r\n  // reset password ....\r\n\r\n\r\n}\r\n",
+            "extends": "BaseApiService",
+            "type": "injectable"
+        },
+        {
+            "name": "MoviesDataService",
+            "id": "injectable-MoviesDataService-a082f6fa535a409c26474efd1dd5689b",
+            "file": "src/app/features/movies/services/data/movies.data.service.ts",
+            "properties": [
+                {
+                    "name": "moviesList",
+                    "defaultValue": "[]",
+                    "type": "Array<any>",
+                    "optional": false,
+                    "description": "",
+                    "line": 8
+                }
+            ],
+            "methods": [
+                {
+                    "name": "loadList",
+                    "args": [
+                        {
+                            "name": "search",
+                            "type": "ListMoviesParams",
+                            "defaultValue": "{}"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 17,
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": {
+                                "pos": 330,
+                                "end": 336,
+                                "flags": 0,
+                                "escapedText": "search"
+                            },
+                            "type": "ListMoviesParams",
+                            "defaultValue": "{}",
+                            "tagName": {
+                                "pos": 324,
+                                "end": 329,
+                                "flags": 0,
+                                "escapedText": "param"
+                            },
+                            "comment": ""
+                        }
+                    ]
+                }
+            ],
+            "description": "",
+            "sourceCode": "import { Injectable } from \"@angular/core\";\r\nimport { ListMoviesParams, MoviesApiService } from \"../api/movies.api.service\";\r\n\r\n@Injectable({\r\n  providedIn: 'root'\r\n})\r\nexport class MoviesDataService {\r\n  moviesList: Array<any> = [];\r\n\r\n  constructor(private moviesApiService: MoviesApiService) {\r\n  }\r\n\r\n  /**\r\n   *\r\n   * @param search\r\n   */\r\n  loadList(search: ListMoviesParams = {}) {\r\n    this.moviesApiService.list(search).subscribe(res => {\r\n      this.moviesList = res.list;\r\n    })\r\n  }\r\n\r\n\r\n  // all other calls,\r\n  // forgot password\r\n  // register\r\n  // reset password ....\r\n\r\n\r\n}\r\n",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [
+                    {
+                        "name": "moviesApiService",
+                        "type": "MoviesApiService"
+                    }
+                ],
+                "line": 8,
+                "jsdoctags": [
+                    {
+                        "name": "moviesApiService",
+                        "type": "MoviesApiService",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "type": "injectable"
+        }
+    ],
+    "classes": [],
+    "directives": [],
+    "components": [
+        {
+            "name": "AppComponent",
+            "id": "component-AppComponent-24cb96d63dc7b1585a9055efabf45973",
+            "file": "src/app/app.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-root",
+            "styleUrls": [
+                "./app.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./app.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 13
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\r\nimport { Router } from \"@angular/router\";\r\n\r\n@Component({\r\n  selector: 'app-root',\r\n  templateUrl: './app.component.html',\r\n  styleUrls: ['./app.component.scss']\r\n})\r\nexport class AppComponent implements OnInit {\r\n  constructor(private router: Router) {\r\n  }\r\n\r\n  ngOnInit(): void {\r\n    this.router.navigateByUrl('/auth/login')\r\n  }\r\n}\r\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "",
+                    "styleUrl": "./app.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [
+                    {
+                        "name": "router",
+                        "type": "Router"
+                    }
+                ],
+                "line": 9,
+                "jsdoctags": [
+                    {
+                        "name": "router",
+                        "type": "Router",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<!--The content below is only a placeholder and can be replaced.-->\r\n<app-icon-definitions></app-icon-definitions>\r\n<main class=\"flex h-full flex-col\">\r\n  <div class=\"flex-grow\">\r\n    <router-outlet></router-outlet>\r\n  </div>\r\n  <app-footer></app-footer>\r\n</main>\r\n\r\n"
+        },
+        {
+            "name": "ButtonComponent",
+            "id": "component-ButtonComponent-642c6c4e474cd5a0ac760dfda26b2fc9",
+            "file": "src/stories/button.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "storybook-button",
+            "styleUrls": [
+                "./button.css"
+            ],
+            "styles": [],
+            "template": "<button   type=\"button\"\n   (click)=\"onClick.emit($event)\"\n   [ngClass]=\"classes\"\n   [ngStyle]=\"{ 'background-color': backgroundColor }\"\n >\n   {{ label }}\n </button>",
+            "templateUrl": [],
+            "viewProviders": [],
+            "inputsClass": [
+                {
+                    "name": "backgroundColor",
+                    "description": "<p>What background color to use</p>\n",
+                    "line": 26,
+                    "type": "string"
+                },
+                {
+                    "name": "label",
+                    "defaultValue": "'Button'",
+                    "description": "<p>Button contents</p>\n",
+                    "line": 40
+                },
+                {
+                    "name": "primary",
+                    "defaultValue": "false",
+                    "description": "<p>Is this the principal call to action on the page?</p>\n",
+                    "line": 20
+                },
+                {
+                    "name": "size",
+                    "defaultValue": "'medium'",
+                    "description": "<p>How large should the button be?</p>\n",
+                    "line": 32,
+                    "type": "\"small\" | \"medium\" | \"large\""
+                }
+            ],
+            "outputsClass": [
+                {
+                    "name": "onClick",
+                    "defaultValue": "new EventEmitter<Event>()",
+                    "description": "<p>Optional click handler</p>\n",
+                    "line": 46,
+                    "type": "EventEmitter"
+                }
+            ],
+            "propertiesClass": [],
+            "methodsClass": [],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, Input, Output, EventEmitter } from '@angular/core';\n\n@Component({\n  selector: 'storybook-button',\n  template: ` <button\n    type=\"button\"\n    (click)=\"onClick.emit($event)\"\n    [ngClass]=\"classes\"\n    [ngStyle]=\"{ 'background-color': backgroundColor }\"\n  >\n    {{ label }}\n  </button>`,\n  styleUrls: ['./button.css'],\n})\nexport default class ButtonComponent {\n  /**\n   * Is this the principal call to action on the page?\n   */\n  @Input()\n  primary = false;\n\n  /**\n   * What background color to use\n   */\n  @Input()\n  backgroundColor?: string;\n\n  /**\n   * How large should the button be?\n   */\n  @Input()\n  size: 'small' | 'medium' | 'large' = 'medium';\n\n  /**\n   * Button contents\n   *\n   * @required\n   */\n  @Input()\n  label = 'Button';\n\n  /**\n   * Optional click handler\n   */\n  @Output()\n  onClick = new EventEmitter<Event>();\n\n  public get classes(): string[] {\n    const mode = this.primary ? 'storybook-button--primary' : 'storybook-button--secondary';\n\n    return ['storybook-button', `storybook-button--${this.size}`, mode];\n  }\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": ".storybook-button {\n  font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;\n  font-weight: 700;\n  border: 0;\n  border-radius: 3em;\n  cursor: pointer;\n  display: inline-block;\n  line-height: 1;\n}\n.storybook-button--primary {\n  color: white;\n  background-color: #1ea7fd;\n}\n.storybook-button--secondary {\n  color: #333;\n  background-color: transparent;\n  box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 0px 1px inset;\n}\n.storybook-button--small {\n  font-size: 12px;\n  padding: 10px 16px;\n}\n.storybook-button--medium {\n  font-size: 14px;\n  padding: 11px 20px;\n}\n.storybook-button--large {\n  font-size: 16px;\n  padding: 12px 24px;\n}\n",
+                    "styleUrl": "./button.css"
+                }
+            ],
+            "stylesData": "",
+            "accessors": {
+                "classes": {
+                    "name": "classes",
+                    "getSignature": {
+                        "name": "classes",
+                        "type": "[]",
+                        "returnType": "string[]",
+                        "line": 48
+                    }
+                }
+            }
+        },
+        {
+            "name": "FooterComponent",
+            "id": "component-FooterComponent-22562bd38eb21e5fb464f268947ec6f0",
+            "file": "src/app/shared/components/footer/footer.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-footer",
+            "styleUrls": [
+                "./footer.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./footer.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 11
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\r\n\r\n@Component({\r\n    selector: 'app-footer',\r\n    templateUrl: './footer.component.html',\r\n    styleUrls: ['./footer.component.scss'],\r\n})\r\nexport class FooterComponent implements OnInit {\r\n    constructor() {}\r\n\r\n    ngOnInit(): void {}\r\n}\r\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "@import 'settings/variables';\r\n\r\nfooter {\r\n\r\n}\r\n",
+                    "styleUrl": "./footer.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 8
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<footer class=\"text-center p-4\">\r\n  Footer content shared\r\n</footer>\r\n"
+        },
+        {
+            "name": "HeaderComponent",
+            "id": "component-HeaderComponent-246e2a69dc126a3bd76c6328dd3b93e2",
+            "file": "src/stories/header.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "storybook-header",
+            "styleUrls": [
+                "./header.css"
+            ],
+            "styles": [],
+            "template": "<header>    <div class=\"wrapper\">\n      <div>\n        <svg width=\"32\" height=\"32\" viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\">\n          <g fill=\"none\" fillRule=\"evenodd\">\n            <path\n              d=\"M10 0h12a10 10 0 0110 10v12a10 10 0 01-10 10H10A10 10 0 010 22V10A10 10 0 0110 0z\"\n              fill=\"#FFF\"\n            />\n            <path\n              d=\"M5.3 10.6l10.4 6v11.1l-10.4-6v-11zm11.4-6.2l9.7 5.5-9.7 5.6V4.4z\"\n              fill=\"#555AB9\"\n            />\n            <path\n              d=\"M27.2 10.6v11.2l-10.5 6V16.5l10.5-6zM15.7 4.4v11L6 10l9.7-5.5z\"\n              fill=\"#91BAF8\"\n            />\n          </g>\n        </svg>\n        <h1>Acme</h1>\n      </div>\n      <div>\n        <storybook-button\n          *ngIf=\"user\"\n          size=\"small\"\n          (onClick)=\"onLogout.emit($event)\"\n          label=\"Log out\"\n        ></storybook-button>\n        <storybook-button\n          *ngIf=\"!user\"\n          size=\"small\"\n          (onClick)=\"onLogin.emit($event)\"\n          label=\"Log in\"\n        ></storybook-button>\n        <storybook-button\n          *ngIf=\"!user\"\n          primary\n          size=\"small\"\n          (onClick)=\"onCreateAccount.emit($event)\"\n          label=\"Sign up\"\n        ></storybook-button>\n      </div>\n    </div>\n  </header>",
+            "templateUrl": [],
+            "viewProviders": [],
+            "inputsClass": [
+                {
+                    "name": "user",
+                    "defaultValue": "null",
+                    "line": 53,
+                    "type": "unknown"
+                }
+            ],
+            "outputsClass": [
+                {
+                    "name": "onCreateAccount",
+                    "defaultValue": "new EventEmitter<Event>()",
+                    "line": 62,
+                    "type": "EventEmitter"
+                },
+                {
+                    "name": "onLogin",
+                    "defaultValue": "new EventEmitter<Event>()",
+                    "line": 56,
+                    "type": "EventEmitter"
+                },
+                {
+                    "name": "onLogout",
+                    "defaultValue": "new EventEmitter<Event>()",
+                    "line": 59,
+                    "type": "EventEmitter"
+                }
+            ],
+            "propertiesClass": [],
+            "methodsClass": [],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, Input, Output, EventEmitter } from '@angular/core';\n\n@Component({\n  selector: 'storybook-header',\n  template: `<header>\n    <div class=\"wrapper\">\n      <div>\n        <svg width=\"32\" height=\"32\" viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\">\n          <g fill=\"none\" fillRule=\"evenodd\">\n            <path\n              d=\"M10 0h12a10 10 0 0110 10v12a10 10 0 01-10 10H10A10 10 0 010 22V10A10 10 0 0110 0z\"\n              fill=\"#FFF\"\n            />\n            <path\n              d=\"M5.3 10.6l10.4 6v11.1l-10.4-6v-11zm11.4-6.2l9.7 5.5-9.7 5.6V4.4z\"\n              fill=\"#555AB9\"\n            />\n            <path\n              d=\"M27.2 10.6v11.2l-10.5 6V16.5l10.5-6zM15.7 4.4v11L6 10l9.7-5.5z\"\n              fill=\"#91BAF8\"\n            />\n          </g>\n        </svg>\n        <h1>Acme</h1>\n      </div>\n      <div>\n        <storybook-button\n          *ngIf=\"user\"\n          size=\"small\"\n          (onClick)=\"onLogout.emit($event)\"\n          label=\"Log out\"\n        ></storybook-button>\n        <storybook-button\n          *ngIf=\"!user\"\n          size=\"small\"\n          (onClick)=\"onLogin.emit($event)\"\n          label=\"Log in\"\n        ></storybook-button>\n        <storybook-button\n          *ngIf=\"!user\"\n          primary\n          size=\"small\"\n          (onClick)=\"onCreateAccount.emit($event)\"\n          label=\"Sign up\"\n        ></storybook-button>\n      </div>\n    </div>\n  </header>`,\n  styleUrls: ['./header.css'],\n})\nexport default class HeaderComponent {\n  @Input()\n  user: unknown = null;\n\n  @Output()\n  onLogin = new EventEmitter<Event>();\n\n  @Output()\n  onLogout = new EventEmitter<Event>();\n\n  @Output()\n  onCreateAccount = new EventEmitter<Event>();\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": ".wrapper {\n  font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;\n  border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n  padding: 15px 20px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\nsvg {\n  display: inline-block;\n  vertical-align: top;\n}\n\nh1 {\n  font-weight: 900;\n  font-size: 20px;\n  line-height: 1;\n  margin: 6px 0 6px 10px;\n  display: inline-block;\n  vertical-align: top;\n}\n\nbutton + button {\n  margin-left: 10px;\n}\n",
+                    "styleUrl": "./header.css"
+                }
+            ],
+            "stylesData": ""
+        },
+        {
+            "name": "IconComponent",
+            "id": "component-IconComponent-0386585a8d570c8fe2deab2ffcc3811a",
+            "file": "src/app/icons/icon/icon.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-icon",
+            "styleUrls": [],
+            "styles": [],
+            "templateUrl": [
+                "./icon.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [
+                {
+                    "name": "fillColor",
+                    "defaultValue": "'red'",
+                    "description": "<p>Fill color\nA fill svg color format\nUse this to change the svg color</p>\n",
+                    "line": 14
+                },
+                {
+                    "name": "id",
+                    "defaultValue": "''",
+                    "line": 30,
+                    "type": "string"
+                },
+                {
+                    "name": "scaleRatio",
+                    "defaultValue": "'1'",
+                    "description": "<p>Scale the icon</p>\n",
+                    "line": 27
+                },
+                {
+                    "name": "size",
+                    "defaultValue": "24",
+                    "description": "<p>Size as number used to make svg width and height</p>\n",
+                    "line": 19
+                },
+                {
+                    "name": "viewbox",
+                    "defaultValue": "'0 0 24 24'",
+                    "line": 21
+                }
+            ],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, Input } from '@angular/core';\r\n\r\n@Component({\r\n  selector: 'app-icon',\r\n  templateUrl: './icon.component.html',\r\n})\r\nexport class IconComponent {\r\n  /**\r\n   * Fill color\r\n   * A fill svg color format\r\n   * Use this to change the svg color\r\n   */\r\n  @Input()\r\n  fillColor = 'red';\r\n  /**\r\n   * Size as number used to make svg width and height\r\n   */\r\n  @Input()\r\n  size = 24;\r\n\r\n  @Input() viewbox = '0 0 24 24';\r\n\r\n  /**\r\n   * Scale the icon\r\n   */\r\n  @Input()\r\n  scaleRatio = '1';\r\n\r\n  // Display the icon\r\n  @Input() id: string = '';\r\n}\r\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
+            "templateData": "<svg\r\n  [attr.width]=\"size\"\r\n  [attr.height]=\"size\"\r\n  [attr.viewBox]=\"viewbox\"\r\n  class=\"icon\"\r\n  xmlns=\"http://www.w3.org/2000/svg\"\r\n>\r\n  <use [attr.fill]=\"fillColor\" [attr.xlink:href]=\"'#' + id\"/>\r\n</svg>\r\n"
+        },
+        {
+            "name": "IconDefinitionsComponent",
+            "id": "component-IconDefinitionsComponent-2188ee0cf4133d657f8057f58a0d691b",
+            "file": "src/app/icons/icon-definitions/icon-definitions.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-icon-definitions",
+            "styleUrls": [],
+            "styles": [],
+            "templateUrl": [
+                "./icon-definitions.svg.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component } from '@angular/core';\r\n\r\n@Component({\r\n    selector: 'app-icon-definitions',\r\n    templateUrl: './icon-definitions.svg.html',\r\n})\r\nexport class IconDefinitionsComponent {}\r\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
+            "templateData": "<svg xmlns=\"http://www.w3.org/2000/svg\" display=\"none\">\r\n  <defs>\r\n    <symbol id=\"user\">\r\n      <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"\r\n            d=\"M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z\"/>\r\n    </symbol>\r\n    <symbol id=\"dots\">\r\n      <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"\r\n            d=\"M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z\"/>\r\n    </symbol>\r\n\r\n  </defs>\r\n</svg>\r\n"
+        },
+        {
+            "name": "LoginComponent",
+            "id": "component-LoginComponent-317b32bdf074d3413ca4729142c97212",
+            "file": "src/app/features/auth/components/login/login.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-auth-login",
+            "styleUrls": [],
+            "styles": [],
+            "templateUrl": [
+                "./login.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "error",
+                    "defaultValue": "\"\"",
+                    "type": "string",
+                    "optional": false,
+                    "description": "<p>Indicates if we there is an error coming back from server</p>\n",
+                    "line": 23
+                },
+                {
+                    "name": "isLoading",
+                    "defaultValue": "false",
+                    "type": "",
+                    "optional": false,
+                    "description": "<p>Indicates if we are connecting to the server</p>\n",
+                    "line": 19
+                },
+                {
+                    "name": "loginForm",
+                    "type": "FormGroup",
+                    "optional": false,
+                    "description": "<p>Reactive form group</p>\n",
+                    "line": 15
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "_initFormGroup",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 34,
+                    "modifierKind": [
+                        112
+                    ]
+                },
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 28
+                },
+                {
+                    "name": "onFormSubmit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 64,
+                    "description": "<p>Call submit</p>\n"
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\r\nimport { AuthApiService } from \"@app-core/services/api/auth.api.service\";\r\nimport { FormControl, FormGroup, Validators } from \"@angular/forms\";\r\nimport { Router } from \"@angular/router\";\r\n\r\n@Component({\r\n  selector: 'app-auth-login',\r\n  templateUrl: './login.component.html',\r\n})\r\nexport class LoginComponent implements OnInit {\r\n\r\n  /**\r\n   * Reactive form group\r\n   */\r\n  loginForm!: FormGroup;\r\n  /**\r\n   * Indicates if we are connecting to the server\r\n   */\r\n  isLoading = false;\r\n  /**\r\n   * Indicates if we there is an error coming back from server\r\n   */\r\n  error = \"\";\r\n\r\n  constructor(private authApiService: AuthApiService, private router: Router) {\r\n  }\r\n\r\n  ngOnInit(): void {\r\n    // init form\r\n    this._initFormGroup();\r\n\r\n  }\r\n\r\n  private _initFormGroup() {\r\n    this.loginForm = new FormGroup({\r\n      email: new FormControl('', [\r\n        Validators.email,\r\n        Validators.required\r\n      ]),\r\n      password: new FormControl('', [\r\n        Validators.required,\r\n        Validators.pattern('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$')\r\n\r\n      ]),\r\n      keepMeLoggedIn: new FormControl(),\r\n    });\r\n  }\r\n\r\n  get email() {\r\n    return this.loginForm.get('email');\r\n  }\r\n\r\n  get password() {\r\n    return this.loginForm.get('password');\r\n  }\r\n\r\n  get keepMeLoggedIn() {\r\n    return this.loginForm.get('keepMeLoggedIn');\r\n  }\r\n\r\n  /**\r\n   * Call submit\r\n   */\r\n  onFormSubmit() {\r\n    this.isLoading = true;\r\n    this.error = \"\";\r\n    this.authApiService.login({\r\n      password: this.password?.value,\r\n      email: this.email?.value,\r\n      keep_me_logged_in: String(!!this.keepMeLoggedIn?.value),\r\n    }).subscribe((res) => {\r\n      setTimeout(() => {\r\n        if (!res) {\r\n          this.error = \"Something went wrong, please try again .\";\r\n          return;\r\n        }\r\n        this.router.navigateByUrl('/home');\r\n      }, 1000);\r\n\r\n    }, (err) => {\r\n\r\n    }, () => {\r\n      setTimeout(() => {\r\n        this.isLoading = false;\r\n      }, 1000)\r\n    })\r\n  }\r\n}\r\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [
+                    {
+                        "name": "authApiService",
+                        "type": "AuthApiService"
+                    },
+                    {
+                        "name": "router",
+                        "type": "Router"
+                    }
+                ],
+                "line": 23,
+                "jsdoctags": [
+                    {
+                        "name": "authApiService",
+                        "type": "AuthApiService",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    },
+                    {
+                        "name": "router",
+                        "type": "Router",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "accessors": {
+                "email": {
+                    "name": "email",
+                    "getSignature": {
+                        "name": "email",
+                        "type": "",
+                        "returnType": "",
+                        "line": 49
+                    }
+                },
+                "password": {
+                    "name": "password",
+                    "getSignature": {
+                        "name": "password",
+                        "type": "",
+                        "returnType": "",
+                        "line": 53
+                    }
+                },
+                "keepMeLoggedIn": {
+                    "name": "keepMeLoggedIn",
+                    "getSignature": {
+                        "name": "keepMeLoggedIn",
+                        "type": "",
+                        "returnType": "",
+                        "line": 57
+                    }
+                }
+            },
+            "templateData": "<div class=\"h-full flex align-middle content-center\">\r\n  <form class=\"p-4\" [formGroup]=\"loginForm\" (ngSubmit)=\"onFormSubmit()\">\r\n    <h3 class=\"font-bold text-xl\">\r\n      Log in.\r\n    </h3>\r\n    <p class=\"pt-12\">\r\n      Log in with your data that you entered during your registration\r\n    </p>\r\n    <div class=\"pt-24\">\r\n      <label for=\"email\" class=\"font-bold pb-2\">Your e-mail</label>\r\n      <div class=\"pt-4\">\r\n        <input id=\"email\" class=\"w-full shadow rounded-4 border px-6 py-8\" name=\"email\" formControlName=\"email\"/>\r\n\r\n\r\n      </div>\r\n      <div *ngIf=\"email?.invalid && (email?.dirty || email?.touched)\" class=\"text-red pt-6\">\r\n        <div *ngIf=\"email?.errors?.required\">\r\n          Email is required.\r\n        </div>\r\n        <div *ngIf=\"email?.errors?.email\">\r\n          Invalid email.\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n\r\n    <div class=\"pt-24\">\r\n      <label for=\"password\" class=\"font-bold pb-2\">Password</label>\r\n      <div class=\"pt-4\">\r\n        <input id=\"password\" class=\"w-full shadow rounded-4 border px-6 py-8\" type=\"password\"\r\n               name=\"Password\" formControlName=\"password\"/>\r\n\r\n      </div>\r\n      <div *ngIf=\"password?.invalid && (password?.dirty || password?.touched)\" class=\"text-red pt-6\">\r\n        <div *ngIf=\"password?.errors?.required\">\r\n          Password is required.\r\n        </div>\r\n        <div *ngIf=\"password?.errors?.pattern\">\r\n          Password is invalid\r\n          <br/>\r\n          <div class=\"text-xs text-black list-unstyled\">\r\n            <ul>\r\n              <li>* Min length 8</li>\r\n              <li>* At least 1 Upper case</li>\r\n              <li>* At least 1 Lower case</li>\r\n              <li>* At least 1 digit</li>\r\n              <li>* At least 1 special character</li>\r\n            </ul>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class=\"pt-24\">\r\n      <div>\r\n        <input id=\"keep_me_logged_in\" type=\"checkbox\" name=\"keepMeLoggedIn\" formControlName=\"keepMeLoggedIn\"/>\r\n        <label for=\"keep_me_logged_in\" class=\"pr-2\">Keep me logged in</label>\r\n      </div>\r\n    </div>\r\n\r\n    <div *ngIf=\"error\" class=\"text-red mt-12 py-12  text-center\">\r\n      {{error}}\r\n    </div>\r\n\r\n    <div *ngIf=\"isLoading\" class=\" mt-12 py-12  text-center\">\r\n      <app-icon id=\"dots\" fillColor=\"purple\"></app-icon>\r\n    </div>\r\n    <div>\r\n      <button *ngIf=\"!isLoading\" [disabled]=\"!loginForm.valid\"\r\n              class=\"bg-purple-500 p-4 rounded-6 w-full text-white mt-12 py-12 app-cursor shadow\"\r\n              type=\"submit\">Log in\r\n      </button>\r\n    </div>\r\n    <div>\r\n      <div class=\"login-action actions text-center\">\r\n        <div class=\"pt-12\">\r\n          Don't have an account? <a class=\"text-purple-800  font-bold\" routerLink=\"/auth/signup\">Sign up </a>\r\n        </div>\r\n        <div class=\"pt-12\">\r\n          <a routerLink=\"/auth/forgot-password\" class=\"text-purple-800 font-bold\">Forgot password</a>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </form>\r\n</div>\r\n"
+        },
+        {
+            "name": "MoviesListComponent",
+            "id": "component-MoviesListComponent-e70370ac69bdaa49f97b5f76ab816e08",
+            "file": "src/app/features/movies/components/movies-list/movies-list.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-movies",
+            "styleUrls": [
+                "./movies-list.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./movies-list.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "moviesDataService",
+                    "type": "MoviesDataService",
+                    "optional": false,
+                    "description": "",
+                    "line": 12,
+                    "modifierKind": [
+                        114
+                    ]
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 15
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\r\nimport { AuthApiService } from \"../../../../core/services/api/auth.api.service\";\r\nimport { MoviesDataService } from \"../../services/data/movies.data.service\";\r\n\r\n@Component({\r\n  selector: 'app-movies',\r\n  templateUrl: './movies-list.component.html',\r\n  styleUrls: ['./movies-list.component.scss']\r\n})\r\nexport class MoviesListComponent implements OnInit {\r\n\r\n  constructor(public moviesDataService: MoviesDataService) {\r\n  }\r\n\r\n  ngOnInit(): void {\r\n    // init form\r\n    this.moviesDataService.loadList();\r\n\r\n  }\r\n}\r\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": ".box {\r\n  height: 0;\r\n  position: relative;\r\n  overflow: hidden;\r\n  padding: 150% 0 0;\r\n}\r\n.cover {\r\n  position: absolute;\r\n  background-size: cover;\r\n  left: 0;\r\n  right: 0;\r\n  /* Add the blur effect */\r\n  bottom: 0;\r\n  top: 0;\r\n}\r\n.action {\r\n  position: absolute;\r\n  top: 12px;\r\n  right: 12px;\r\n}\r\n.content {\r\n  position: absolute;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 10%;\r\n  text-shadow: 0 1px 0 #ccc;\r\n  z-index: 11;\r\n  text-align: center;\r\n}\r\n",
+                    "styleUrl": "./movies-list.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [
+                    {
+                        "name": "moviesDataService",
+                        "type": "MoviesDataService"
+                    }
+                ],
+                "line": 10,
+                "jsdoctags": [
+                    {
+                        "name": "moviesDataService",
+                        "type": "MoviesDataService",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<div class=\"flex flex-wrap justify-center\">\r\n  <div *ngFor=\"let movie of moviesDataService.moviesList \" class=\"p-12\">\r\n    <div class=\"box w-256 rounded-12 \">\r\n      <div class=\"cover\"  style=\"background-image: url('/assets/images/movies/{{movie.illustration}}')\">\r\n      </div>\r\n      <div class=\"action\">\r\n        <label class=\"toggle\">\r\n          <input type=\"checkbox\">\r\n          <span class=\"slider round\"></span>\r\n        </label>\r\n      </div>\r\n      <!--<img class=\"box-image\" src=\"/assets/images/movies/{{movie.illustration}}\"/>-->\r\n      <div class=\"content\">\r\n        <div class=\"text-white pb-12 font-bold text-medium\">\r\n          {{movie.name}}\r\n        </div>\r\n        <div class=\"text-yellow  font-bold text-medium\">\r\n          {{movie.price}} €\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n\r\n</div>\r\n"
+        },
+        {
+            "name": "PageComponent",
+            "id": "component-PageComponent-8f196770333aa216860a88c0b6b221aa",
+            "file": "src/stories/page.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "storybook-page",
+            "styleUrls": [
+                "./page.css"
+            ],
+            "styles": [],
+            "template": "<article>    <storybook-header\n      [user]=\"user\"\n      (onLogout)=\"onLogout.emit($event)\"\n      (onLogin)=\"onLogin.emit($event)\"\n      (onCreateAccount)=\"onCreateAccount.emit($event)\"\n    ></storybook-header>\n    <section>\n      <h2>Pages in Storybook</h2>\n      <p>\n        We recommend building UIs with a\n        <a href=\"https://componentdriven.org\" target=\"_blank\" rel=\"noopener noreferrer\">\n          <strong>component-driven</strong>\n        </a>\n        process starting with atomic components and ending with pages.\n      </p>\n      <p>\n        Render pages with mock data. This makes it easy to build and review page states without\n        needing to navigate to them in your app. Here are some handy patterns for managing page data\n        in Storybook:\n      </p>\n      <ul>\n        <li>\n          Use a higher-level connected component. Storybook helps you compose such data from the\n          \"args\" of child component stories\n        </li>\n        <li>\n          Assemble data in the page component from your services. You can mock these services out\n          using Storybook.\n        </li>\n      </ul>\n      <p>\n        Get a guided tutorial on component-driven development at\n        <a href=\"https://storybook.js.org/tutorials/\" target=\"_blank\" rel=\"noopener noreferrer\">\n          Storybook tutorials\n        </a>\n        . Read more in the\n        <a href=\"https://storybook.js.org/docs\" target=\"_blank\" rel=\"noopener noreferrer\"> docs </a>\n        .\n      </p>\n      <div class=\"tip-wrapper\">\n        <span class=\"tip\">Tip</span> Adjust the width of the canvas with the\n        <svg width=\"10\" height=\"10\" viewBox=\"0 0 12 12\" xmlns=\"http://www.w3.org/2000/svg\">\n          <g fill=\"none\" fillRule=\"evenodd\">\n            <path\n              d=\"M1.5 5.2h4.8c.3 0 .5.2.5.4v5.1c-.1.2-.3.3-.4.3H1.4a.5.5 0 01-.5-.4V5.7c0-.3.2-.5.5-.5zm0-2.1h6.9c.3 0 .5.2.5.4v7a.5.5 0 01-1 0V4H1.5a.5.5 0 010-1zm0-2.1h9c.3 0 .5.2.5.4v9.1a.5.5 0 01-1 0V2H1.5a.5.5 0 010-1zm4.3 5.2H2V10h3.8V6.2z\"\n              id=\"a\"\n              fill=\"#999\"\n            />\n          </g>\n        </svg>\n        Viewports addon in the toolbar\n      </div>\n    </section>\n  </article>",
+            "templateUrl": [],
+            "viewProviders": [],
+            "inputsClass": [
+                {
+                    "name": "user",
+                    "defaultValue": "null",
+                    "line": 64,
+                    "type": "unknown"
+                }
+            ],
+            "outputsClass": [
+                {
+                    "name": "onCreateAccount",
+                    "defaultValue": "new EventEmitter<Event>()",
+                    "line": 73,
+                    "type": "EventEmitter"
+                },
+                {
+                    "name": "onLogin",
+                    "defaultValue": "new EventEmitter<Event>()",
+                    "line": 67,
+                    "type": "EventEmitter"
+                },
+                {
+                    "name": "onLogout",
+                    "defaultValue": "new EventEmitter<Event>()",
+                    "line": 70,
+                    "type": "EventEmitter"
+                }
+            ],
+            "propertiesClass": [],
+            "methodsClass": [],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, Input, Output, EventEmitter } from '@angular/core';\n\n@Component({\n  selector: 'storybook-page',\n  template: `<article>\n    <storybook-header\n      [user]=\"user\"\n      (onLogout)=\"onLogout.emit($event)\"\n      (onLogin)=\"onLogin.emit($event)\"\n      (onCreateAccount)=\"onCreateAccount.emit($event)\"\n    ></storybook-header>\n    <section>\n      <h2>Pages in Storybook</h2>\n      <p>\n        We recommend building UIs with a\n        <a href=\"https://componentdriven.org\" target=\"_blank\" rel=\"noopener noreferrer\">\n          <strong>component-driven</strong>\n        </a>\n        process starting with atomic components and ending with pages.\n      </p>\n      <p>\n        Render pages with mock data. This makes it easy to build and review page states without\n        needing to navigate to them in your app. Here are some handy patterns for managing page data\n        in Storybook:\n      </p>\n      <ul>\n        <li>\n          Use a higher-level connected component. Storybook helps you compose such data from the\n          \"args\" of child component stories\n        </li>\n        <li>\n          Assemble data in the page component from your services. You can mock these services out\n          using Storybook.\n        </li>\n      </ul>\n      <p>\n        Get a guided tutorial on component-driven development at\n        <a href=\"https://storybook.js.org/tutorials/\" target=\"_blank\" rel=\"noopener noreferrer\">\n          Storybook tutorials\n        </a>\n        . Read more in the\n        <a href=\"https://storybook.js.org/docs\" target=\"_blank\" rel=\"noopener noreferrer\"> docs </a>\n        .\n      </p>\n      <div class=\"tip-wrapper\">\n        <span class=\"tip\">Tip</span> Adjust the width of the canvas with the\n        <svg width=\"10\" height=\"10\" viewBox=\"0 0 12 12\" xmlns=\"http://www.w3.org/2000/svg\">\n          <g fill=\"none\" fillRule=\"evenodd\">\n            <path\n              d=\"M1.5 5.2h4.8c.3 0 .5.2.5.4v5.1c-.1.2-.3.3-.4.3H1.4a.5.5 0 01-.5-.4V5.7c0-.3.2-.5.5-.5zm0-2.1h6.9c.3 0 .5.2.5.4v7a.5.5 0 01-1 0V4H1.5a.5.5 0 010-1zm0-2.1h9c.3 0 .5.2.5.4v9.1a.5.5 0 01-1 0V2H1.5a.5.5 0 010-1zm4.3 5.2H2V10h3.8V6.2z\"\n              id=\"a\"\n              fill=\"#999\"\n            />\n          </g>\n        </svg>\n        Viewports addon in the toolbar\n      </div>\n    </section>\n  </article>`,\n  styleUrls: ['./page.css'],\n})\nexport default class PageComponent {\n  @Input()\n  user: unknown = null;\n\n  @Output()\n  onLogin = new EventEmitter<Event>();\n\n  @Output()\n  onLogout = new EventEmitter<Event>();\n\n  @Output()\n  onCreateAccount = new EventEmitter<Event>();\n}\n\n// export const Page = ({ user, onLogin, onLogout, onCreateAccount }) => (\n//   <article>\n//     <Header user={user} onLogin={onLogin} onLogout={onLogout} onCreateAccount={onCreateAccount} />\n\n// );\n// Page.propTypes = {\n//   user: PropTypes.shape({}),\n//   onLogin: PropTypes.func.isRequired,\n//   onLogout: PropTypes.func.isRequired,\n//   onCreateAccount: PropTypes.func.isRequired,\n// };\n\n// Page.defaultProps = {\n//   user: null,\n// };\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "section {\n  font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;\n  font-size: 14px;\n  line-height: 24px;\n  padding: 48px 20px;\n  margin: 0 auto;\n  max-width: 600px;\n  color: #333;\n}\n\nh2 {\n  font-weight: 900;\n  font-size: 32px;\n  line-height: 1;\n  margin: 0 0 4px;\n  display: inline-block;\n  vertical-align: top;\n}\n\np {\n  margin: 1em 0;\n}\n\na {\n  text-decoration: none;\n  color: #1ea7fd;\n}\n\nul {\n  padding-left: 30px;\n  margin: 1em 0;\n}\n\nli {\n  margin-bottom: 8px;\n}\n\n.tip {\n  display: inline-block;\n  border-radius: 1em;\n  font-size: 11px;\n  line-height: 12px;\n  font-weight: 700;\n  background: #e7fdd8;\n  color: #66bf3c;\n  padding: 4px 12px;\n  margin-right: 10px;\n  vertical-align: top;\n}\n\n.tip-wrapper {\n  font-size: 13px;\n  line-height: 20px;\n  margin-top: 40px;\n  margin-bottom: 40px;\n}\n\n.tip-wrapper svg {\n  display: inline-block;\n  height: 12px;\n  width: 12px;\n  margin-right: 4px;\n  vertical-align: top;\n  margin-top: 3px;\n}\n\n.tip-wrapper svg path {\n  fill: #1ea7fd;\n}\n",
+                    "styleUrl": "./page.css"
+                }
+            ],
+            "stylesData": ""
+        }
+    ],
+    "modules": [
+        {
+            "name": "AppModule",
+            "children": [
+                {
+                    "type": "providers",
+                    "elements": [
+                        {
+                            "name": "MockInterceptor"
+                        }
+                    ]
+                },
+                {
+                    "type": "declarations",
+                    "elements": [
+                        {
+                            "name": "AppComponent"
+                        }
+                    ]
+                },
+                {
+                    "type": "imports",
+                    "elements": [
+                        {
+                            "name": "AppRoutingModule"
+                        },
+                        {
+                            "name": "IconsModule"
+                        },
+                        {
+                            "name": "SharedModule"
+                        }
+                    ]
+                },
+                {
+                    "type": "exports",
+                    "elements": []
+                },
+                {
+                    "type": "bootstrap",
+                    "elements": [
+                        {
+                            "name": "AppComponent"
+                        }
+                    ]
+                },
+                {
+                    "type": "classes",
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "name": "AppRoutingModule",
+            "children": [
+                {
+                    "type": "providers",
+                    "elements": []
+                },
+                {
+                    "type": "declarations",
+                    "elements": []
+                },
+                {
+                    "type": "imports",
+                    "elements": [
+                        {
+                            "name": "AuthModule"
+                        },
+                        {
+                            "name": "MoviesModule"
+                        }
+                    ]
+                },
+                {
+                    "type": "exports",
+                    "elements": []
+                },
+                {
+                    "type": "bootstrap",
+                    "elements": []
+                },
+                {
+                    "type": "classes",
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "name": "AuthModule",
+            "children": [
+                {
+                    "type": "providers",
+                    "elements": []
+                },
+                {
+                    "type": "declarations",
+                    "elements": [
+                        {
+                            "name": "LoginComponent"
+                        }
+                    ]
+                },
+                {
+                    "type": "imports",
+                    "elements": [
+                        {
+                            "name": "AuthRoutingModule"
+                        },
+                        {
+                            "name": "CoreModule"
+                        },
+                        {
+                            "name": "IconsModule"
+                        }
+                    ]
+                },
+                {
+                    "type": "exports",
+                    "elements": [
+                        {
+                            "name": "LoginComponent"
+                        }
+                    ]
+                },
+                {
+                    "type": "bootstrap",
+                    "elements": []
+                },
+                {
+                    "type": "classes",
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "name": "AuthRoutingModule",
+            "children": [
+                {
+                    "type": "providers",
+                    "elements": []
+                },
+                {
+                    "type": "declarations",
+                    "elements": []
+                },
+                {
+                    "type": "imports",
+                    "elements": [
+                        {
+                            "name": "CoreModule"
+                        }
+                    ]
+                },
+                {
+                    "type": "exports",
+                    "elements": []
+                },
+                {
+                    "type": "bootstrap",
+                    "elements": []
+                },
+                {
+                    "type": "classes",
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "name": "CoreModule",
+            "children": [
+                {
+                    "type": "providers",
+                    "elements": []
+                },
+                {
+                    "type": "declarations",
+                    "elements": []
+                },
+                {
+                    "type": "imports",
+                    "elements": []
+                },
+                {
+                    "type": "exports",
+                    "elements": []
+                },
+                {
+                    "type": "bootstrap",
+                    "elements": []
+                },
+                {
+                    "type": "classes",
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "name": "IconsModule",
+            "children": [
+                {
+                    "type": "providers",
+                    "elements": []
+                },
+                {
+                    "type": "declarations",
+                    "elements": [
+                        {
+                            "name": "IconComponent"
+                        },
+                        {
+                            "name": "IconDefinitionsComponent"
+                        }
+                    ]
+                },
+                {
+                    "type": "imports",
+                    "elements": []
+                },
+                {
+                    "type": "exports",
+                    "elements": [
+                        {
+                            "name": "IconComponent"
+                        },
+                        {
+                            "name": "IconDefinitionsComponent"
+                        }
+                    ]
+                },
+                {
+                    "type": "bootstrap",
+                    "elements": []
+                },
+                {
+                    "type": "classes",
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "name": "MoviesModule",
+            "children": [
+                {
+                    "type": "providers",
+                    "elements": []
+                },
+                {
+                    "type": "declarations",
+                    "elements": [
+                        {
+                            "name": "MoviesListComponent"
+                        }
+                    ]
+                },
+                {
+                    "type": "imports",
+                    "elements": [
+                        {
+                            "name": "CoreModule"
+                        },
+                        {
+                            "name": "IconsModule"
+                        },
+                        {
+                            "name": "MoviesRoutingModule"
+                        }
+                    ]
+                },
+                {
+                    "type": "exports",
+                    "elements": []
+                },
+                {
+                    "type": "bootstrap",
+                    "elements": []
+                },
+                {
+                    "type": "classes",
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "name": "MoviesRoutingModule",
+            "children": [
+                {
+                    "type": "providers",
+                    "elements": []
+                },
+                {
+                    "type": "declarations",
+                    "elements": []
+                },
+                {
+                    "type": "imports",
+                    "elements": [
+                        {
+                            "name": "CoreModule"
+                        }
+                    ]
+                },
+                {
+                    "type": "exports",
+                    "elements": []
+                },
+                {
+                    "type": "bootstrap",
+                    "elements": []
+                },
+                {
+                    "type": "classes",
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "name": "SharedModule",
+            "children": [
+                {
+                    "type": "providers",
+                    "elements": []
+                },
+                {
+                    "type": "declarations",
+                    "elements": [
+                        {
+                            "name": "FooterComponent"
+                        }
+                    ]
+                },
+                {
+                    "type": "imports",
+                    "elements": [
+                        {
+                            "name": "IconsModule"
+                        }
+                    ]
+                },
+                {
+                    "type": "exports",
+                    "elements": [
+                        {
+                            "name": "FooterComponent"
+                        }
+                    ]
+                },
+                {
+                    "type": "bootstrap",
+                    "elements": []
+                },
+                {
+                    "type": "classes",
+                    "elements": []
+                }
+            ]
+        }
+    ],
+    "miscellaneous": {
+        "variables": [
+            {
+                "name": "ACCOUNTS_MOCK",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/shared/interceptors/mock.intercepter.ts",
+                "type": "any",
+                "defaultValue": "{\r\n  \"user@untienots.com\": {\r\n    role: 'user'\r\n  },\r\n  \"admin@untienots.com\": {\r\n    role: 'admin'\r\n  }\r\n}"
+            },
+            {
+                "name": "actionsData",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/features/auth/components/login/login.stories.ts",
+                "type": "object",
+                "defaultValue": "{\r\n  onPinTask: action('onPinTask'),\r\n  onArchiveTask: action('onArchiveTask'),\r\n}"
+            },
+            {
+                "name": "API_AUTH_ROUTES",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/shared/constants/api.routes.ts",
+                "type": "object",
+                "defaultValue": "{\r\n  BASE: '/auth',\r\n  LOGIN_PATH: 'login'\r\n}"
+            },
+            {
+                "name": "API_MOVIES_ROUTES",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/shared/constants/api.routes.ts",
+                "type": "object",
+                "defaultValue": "{\r\n  BASE: '/movies',\r\n  LIST_PATH: 'login'\r\n}"
+            },
+            {
+                "name": "context",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/test.ts",
+                "type": "",
+                "defaultValue": "require.context('./', true, /\\.spec\\.ts$/)"
+            },
+            {
+                "name": "Default",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/features/auth/components/login/login.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            },
+            {
+                "name": "environment",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/environments/environment.prod.ts",
+                "type": "object",
+                "defaultValue": "{\r\n  production: true,\r\n  API_HOST: \"TODO\"\r\n}"
+            },
+            {
+                "name": "environment",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/environments/environment.ts",
+                "type": "object",
+                "defaultValue": "{\r\n  production: false,\r\n  API_HOST: \"\"\r\n}"
+            },
+            {
+                "name": "Large",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/stories/Button.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            },
+            {
+                "name": "LoggedIn",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/stories/Header.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            },
+            {
+                "name": "LoggedIn",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/stories/Page.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            },
+            {
+                "name": "LoggedOut",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/stories/Header.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            },
+            {
+                "name": "LoggedOut",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/stories/Page.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            },
+            {
+                "name": "MOVIES_MOCK",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/shared/interceptors/mock.intercepter.ts",
+                "type": "[]",
+                "defaultValue": "[\r\n    {\r\n      \"id\": 1,\r\n      \"name\": \"Aquaman\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"aquaman.jpg\"\r\n    },\r\n    {\r\n      \"id\": 2,\r\n      \"name\": \"Batman VS Superman\",\r\n      \"price\": 10,\r\n      \"on_display\": true,\r\n      \"illustration\": \"batman-vs-superman.jpg\"\r\n    },\r\n    {\r\n      \"id\": 3,\r\n      \"name\": \"Blade Runner\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"blade-runner.jpg\"\r\n    },\r\n    {\r\n      \"id\": 4,\r\n      \"name\": \"Les gardiens de la galaxie\",\r\n      \"price\": 10,\r\n      \"on_display\": true,\r\n      \"illustration\": \"gardiens-de-la-galaxie.jpg\"\r\n    },\r\n    {\r\n      \"id\": 5,\r\n      \"name\": \"Harry Potter\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"harry-potter.jpg\"\r\n    },\r\n    {\r\n      \"id\": 6,\r\n      \"name\": \"Joken\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"joker.jpg\"\r\n    },\r\n    {\r\n      \"id\": 7,\r\n      \"name\": \"Le parrain\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"le-parrain.jpg\"\r\n    },\r\n    {\r\n      \"id\": 8,\r\n      \"name\": \"Sonic\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"sonic.jpg\"\r\n    },\r\n    {\r\n      \"id\": 9,\r\n      \"name\": \"Spider Man\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"spider-man.jpg\"\r\n    },\r\n    {\r\n      \"id\": 10,\r\n      \"name\": \"Tenet\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"tenet.jpg\"\r\n    }\r\n  ]"
+            },
+            {
+                "name": "Primary",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/stories/Button.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            },
+            {
+                "name": "require",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/test.ts",
+                "type": "literal type"
+            },
+            {
+                "name": "Secondary",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/stories/Button.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            },
+            {
+                "name": "Small",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/stories/Button.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            },
+            {
+                "name": "Template",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/stories/Button.stories.ts",
+                "type": "Story<Button>",
+                "defaultValue": "(args: Button) => ({\n  props: args,\n})"
+            },
+            {
+                "name": "Template",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/stories/Header.stories.ts",
+                "type": "Story<Header>",
+                "defaultValue": "(args: Header) => ({\n  props: args,\n})"
+            },
+            {
+                "name": "Template",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/stories/Page.stories.ts",
+                "type": "Story<Page>",
+                "defaultValue": "(args: Page) => ({\n  props: args,\n})"
+            },
+            {
+                "name": "Template",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/features/auth/components/login/login.stories.ts",
+                "type": "Story<LoginComponent>",
+                "defaultValue": "args => ({\r\n  props: {\r\n    ...args,\r\n    onPinTask: actionsData.onPinTask,\r\n    onArchiveTask: actionsData.onArchiveTask,\r\n  },\r\n})"
+            }
+        ],
+        "functions": [],
+        "typealiases": [],
+        "enumerations": [
+            {
+                "name": "MessageType",
+                "childs": [
+                    {
+                        "name": "Error",
+                        "value": "1"
+                    },
+                    {
+                        "name": "Warning"
+                    },
+                    {
+                        "name": "Info"
+                    },
+                    {
+                        "name": "Any"
+                    }
+                ],
+                "ctype": "miscellaneous",
+                "subtype": "enum",
+                "description": "",
+                "file": "src/app/core/services/common/logger.service.ts"
+            }
+        ],
+        "groupedVariables": {
+            "src/app/shared/interceptors/mock.intercepter.ts": [
+                {
+                    "name": "ACCOUNTS_MOCK",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/shared/interceptors/mock.intercepter.ts",
+                    "type": "any",
+                    "defaultValue": "{\r\n  \"user@untienots.com\": {\r\n    role: 'user'\r\n  },\r\n  \"admin@untienots.com\": {\r\n    role: 'admin'\r\n  }\r\n}"
+                },
+                {
+                    "name": "MOVIES_MOCK",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/shared/interceptors/mock.intercepter.ts",
+                    "type": "[]",
+                    "defaultValue": "[\r\n    {\r\n      \"id\": 1,\r\n      \"name\": \"Aquaman\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"aquaman.jpg\"\r\n    },\r\n    {\r\n      \"id\": 2,\r\n      \"name\": \"Batman VS Superman\",\r\n      \"price\": 10,\r\n      \"on_display\": true,\r\n      \"illustration\": \"batman-vs-superman.jpg\"\r\n    },\r\n    {\r\n      \"id\": 3,\r\n      \"name\": \"Blade Runner\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"blade-runner.jpg\"\r\n    },\r\n    {\r\n      \"id\": 4,\r\n      \"name\": \"Les gardiens de la galaxie\",\r\n      \"price\": 10,\r\n      \"on_display\": true,\r\n      \"illustration\": \"gardiens-de-la-galaxie.jpg\"\r\n    },\r\n    {\r\n      \"id\": 5,\r\n      \"name\": \"Harry Potter\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"harry-potter.jpg\"\r\n    },\r\n    {\r\n      \"id\": 6,\r\n      \"name\": \"Joken\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"joker.jpg\"\r\n    },\r\n    {\r\n      \"id\": 7,\r\n      \"name\": \"Le parrain\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"le-parrain.jpg\"\r\n    },\r\n    {\r\n      \"id\": 8,\r\n      \"name\": \"Sonic\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"sonic.jpg\"\r\n    },\r\n    {\r\n      \"id\": 9,\r\n      \"name\": \"Spider Man\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"spider-man.jpg\"\r\n    },\r\n    {\r\n      \"id\": 10,\r\n      \"name\": \"Tenet\",\r\n      \"price\": 10,\r\n      \"on_display\": false,\r\n      \"illustration\": \"tenet.jpg\"\r\n    }\r\n  ]"
+                }
+            ],
+            "src/app/features/auth/components/login/login.stories.ts": [
+                {
+                    "name": "actionsData",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/features/auth/components/login/login.stories.ts",
+                    "type": "object",
+                    "defaultValue": "{\r\n  onPinTask: action('onPinTask'),\r\n  onArchiveTask: action('onArchiveTask'),\r\n}"
+                },
+                {
+                    "name": "Default",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/features/auth/components/login/login.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "Template",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/features/auth/components/login/login.stories.ts",
+                    "type": "Story<LoginComponent>",
+                    "defaultValue": "args => ({\r\n  props: {\r\n    ...args,\r\n    onPinTask: actionsData.onPinTask,\r\n    onArchiveTask: actionsData.onArchiveTask,\r\n  },\r\n})"
+                }
+            ],
+            "src/app/shared/constants/api.routes.ts": [
+                {
+                    "name": "API_AUTH_ROUTES",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/shared/constants/api.routes.ts",
+                    "type": "object",
+                    "defaultValue": "{\r\n  BASE: '/auth',\r\n  LOGIN_PATH: 'login'\r\n}"
+                },
+                {
+                    "name": "API_MOVIES_ROUTES",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/shared/constants/api.routes.ts",
+                    "type": "object",
+                    "defaultValue": "{\r\n  BASE: '/movies',\r\n  LIST_PATH: 'login'\r\n}"
+                }
+            ],
+            "src/test.ts": [
+                {
+                    "name": "context",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/test.ts",
+                    "type": "",
+                    "defaultValue": "require.context('./', true, /\\.spec\\.ts$/)"
+                },
+                {
+                    "name": "require",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/test.ts",
+                    "type": "literal type"
+                }
+            ],
+            "src/environments/environment.prod.ts": [
+                {
+                    "name": "environment",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/environments/environment.prod.ts",
+                    "type": "object",
+                    "defaultValue": "{\r\n  production: true,\r\n  API_HOST: \"TODO\"\r\n}"
+                }
+            ],
+            "src/environments/environment.ts": [
+                {
+                    "name": "environment",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/environments/environment.ts",
+                    "type": "object",
+                    "defaultValue": "{\r\n  production: false,\r\n  API_HOST: \"\"\r\n}"
+                }
+            ],
+            "src/stories/Button.stories.ts": [
+                {
+                    "name": "Large",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/stories/Button.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "Primary",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/stories/Button.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "Secondary",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/stories/Button.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "Small",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/stories/Button.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "Template",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/stories/Button.stories.ts",
+                    "type": "Story<Button>",
+                    "defaultValue": "(args: Button) => ({\n  props: args,\n})"
+                }
+            ],
+            "src/stories/Header.stories.ts": [
+                {
+                    "name": "LoggedIn",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/stories/Header.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "LoggedOut",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/stories/Header.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "Template",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/stories/Header.stories.ts",
+                    "type": "Story<Header>",
+                    "defaultValue": "(args: Header) => ({\n  props: args,\n})"
+                }
+            ],
+            "src/stories/Page.stories.ts": [
+                {
+                    "name": "LoggedIn",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/stories/Page.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "LoggedOut",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/stories/Page.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "Template",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/stories/Page.stories.ts",
+                    "type": "Story<Page>",
+                    "defaultValue": "(args: Page) => ({\n  props: args,\n})"
+                }
+            ]
+        },
+        "groupedFunctions": {},
+        "groupedEnumerations": {
+            "src/app/core/services/common/logger.service.ts": [
+                {
+                    "name": "MessageType",
+                    "childs": [
+                        {
+                            "name": "Error",
+                            "value": "1"
+                        },
+                        {
+                            "name": "Warning"
+                        },
+                        {
+                            "name": "Info"
+                        },
+                        {
+                            "name": "Any"
+                        }
+                    ],
+                    "ctype": "miscellaneous",
+                    "subtype": "enum",
+                    "description": "",
+                    "file": "src/app/core/services/common/logger.service.ts"
+                }
+            ]
+        },
+        "groupedTypeAliases": {}
+    },
+    "routes": {
+        "name": "<root>",
+        "kind": "module",
+        "className": "AppModule",
+        "children": [
+            {
+                "name": "routes",
+                "filename": "src/app/app-routing.module.ts",
+                "module": "AppRoutingModule",
+                "kind": "module"
+            },
+            {
+                "name": "routes",
+                "filename": "src/app/features/auth/auth.routing.module.ts",
+                "module": "AuthRoutingModule",
+                "children": [
+                    {
+                        "path": "login",
+                        "component": "LoginComponent"
+                    }
+                ],
+                "kind": "module"
+            },
+            {
+                "name": "routes",
+                "filename": "src/app/features/movies/movies.routing.module.ts",
+                "module": "MoviesRoutingModule",
+                "children": [
+                    {
+                        "path": "",
+                        "component": "MoviesListComponent"
+                    }
+                ],
+                "kind": "module"
+            }
+        ]
+    },
+    "coverage": {
+        "count": 9,
+        "status": "low",
+        "files": [
+            {
+                "filePath": "src/app/app.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "AppComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/core/models/base.model.ts",
+                "type": "injectable",
+                "linktype": "injectable",
+                "name": "BaseModel",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/core/services/api/auth.api.service.ts",
+                "type": "injectable",
+                "linktype": "injectable",
+                "name": "AuthApiService",
+                "coveragePercent": 37,
+                "coverageCount": "3/8",
+                "status": "medium"
+            },
+            {
+                "filePath": "src/app/core/services/api/auth.api.service.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "LoginFormParams",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/core/services/api/base.api.service.ts",
+                "type": "injectable",
+                "linktype": "injectable",
+                "name": "BaseApiService",
+                "coveragePercent": 37,
+                "coverageCount": "3/8",
+                "status": "medium"
+            },
+            {
+                "filePath": "src/app/core/services/api/base.api.service.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "HttpOptions",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/core/services/common/logger.service.ts",
+                "type": "injectable",
+                "linktype": "injectable",
+                "name": "LoggerService",
+                "coveragePercent": 28,
+                "coverageCount": "2/7",
+                "status": "medium"
+            },
+            {
+                "filePath": "src/app/features/auth/components/login/login.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "LoginComponent",
+                "coveragePercent": 50,
+                "coverageCount": "4/8",
+                "status": "medium"
+            },
+            {
+                "filePath": "src/app/features/auth/components/login/login.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "actionsData",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/features/auth/components/login/login.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Default",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/features/auth/components/login/login.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Template",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/features/movies/components/movies-list/movies-list.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "MoviesListComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/features/movies/services/api/movies.api.service.ts",
+                "type": "injectable",
+                "linktype": "injectable",
+                "name": "MoviesApiService",
+                "coveragePercent": 37,
+                "coverageCount": "3/8",
+                "status": "medium"
+            },
+            {
+                "filePath": "src/app/features/movies/services/api/movies.api.service.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "ListMoviesParams",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/features/movies/services/data/movies.data.service.ts",
+                "type": "injectable",
+                "linktype": "injectable",
+                "name": "MoviesDataService",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/icons/icon-definitions/icon-definitions.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "IconDefinitionsComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/icons/icon/icon.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "IconComponent",
+                "coveragePercent": 50,
+                "coverageCount": "3/6",
+                "status": "medium"
+            },
+            {
+                "filePath": "src/app/shared/components/footer/footer.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "FooterComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/shared/constants/api.routes.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "API_AUTH_ROUTES",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/shared/constants/api.routes.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "API_MOVIES_ROUTES",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/shared/interceptors/mock.intercepter.ts",
+                "type": "interceptor",
+                "linktype": "interceptor",
+                "name": "MockInterceptor",
+                "coveragePercent": 50,
+                "coverageCount": "1/2",
+                "status": "medium"
+            },
+            {
+                "filePath": "src/app/shared/interceptors/mock.intercepter.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "ACCOUNTS_MOCK",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/shared/interceptors/mock.intercepter.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "MOVIES_MOCK",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/environments/environment.prod.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "environment",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/environments/environment.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "environment",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/stories/Button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Large",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/stories/Button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Primary",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/stories/Button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Secondary",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/stories/Button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Small",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/stories/Button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Template",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/stories/Header.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "LoggedIn",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/stories/Header.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "LoggedOut",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/stories/Header.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Template",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/stories/Page.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "LoggedIn",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/stories/Page.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "LoggedOut",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/stories/Page.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Template",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/stories/button.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ButtonComponent",
+                "coveragePercent": 83,
+                "coverageCount": "5/6",
+                "status": "very-good"
+            },
+            {
+                "filePath": "src/stories/header.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "HeaderComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/5",
+                "status": "low"
+            },
+            {
+                "filePath": "src/stories/page.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "PageComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/5",
+                "status": "low"
+            },
+            {
+                "filePath": "src/test.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "context",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/test.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "require",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            }
+        ]
+    }
+}

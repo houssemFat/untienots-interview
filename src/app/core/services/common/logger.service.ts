@@ -1,4 +1,6 @@
-import { environment } from 'environments/environment';
+// use absolute import
+// TODO, just to fix storybook import error
+import { environment } from "../../../../environments/environment";
 import { Injectable } from '@angular/core';
 
 enum MessageType {
@@ -9,7 +11,7 @@ enum MessageType {
 }
 
 @Injectable({
-  providedIn : 'root'
+  providedIn: 'root'
 })
 export class LoggerService {
 

@@ -13,7 +13,7 @@
 
 
       </div>
-      <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="text-red pt-6">
+      <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="text-red pt-6 error">
         <div *ngIf="email?.errors?.required">
           Email is required.
         </div>
@@ -28,11 +28,25 @@
       <label for="password" class="font-bold pb-2">Password</label>
       <div class="pt-4">
         <input id="password" class="w-full shadow rounded-4 border px-6 py-8" type="password"
-               name="Password" formControlName="password"/>
+               name="password" formControlName="password"/>
+
       </div>
-      <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="text-red pt-6">
+      <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="text-red pt-6 error">
         <div *ngIf="password?.errors?.required">
           Password is required.
+        </div>
+        <div *ngIf="password?.errors?.pattern">
+          Password is invalid
+          <br/>
+          <div class="text-xs text-black">
+            <ul class=" list-unstyled">
+              <li>* Min length 8</li>
+              <li>* At least 1 Upper case</li>
+              <li>* At least 1 Lower case</li>
+              <li>* At least 1 digit</li>
+              <li>* At least 1 special character</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -40,11 +54,11 @@
     <div class="pt-24">
       <div>
         <input id="keep_me_logged_in" type="checkbox" name="keepMeLoggedIn" formControlName="keepMeLoggedIn"/>
-        <label for="keep_me_logged_in">Keep me logged in</label>
+        <label for="keep_me_logged_in" class="pr-2">Keep me logged in</label>
       </div>
     </div>
 
-    <div *ngIf="error" class="text-red mt-12 py-12  text-center">
+    <div *ngIf="error" class="text-red mt-12 py-12 text-center server-error">
       {{error}}
     </div>
 
@@ -52,7 +66,8 @@
       <app-icon id="dots" fillColor="purple"></app-icon>
     </div>
     <div>
-      <button *ngIf="!isLoading" class="bg-purple-500 p-4 rounded-6 w-full text-white mt-12 py-12 app-cursor shadow"
+      <button *ngIf="!isLoading" [disabled]="!loginForm.valid"
+              class="bg-purple-500 p-4 rounded-6 w-full text-white mt-12 py-12 app-cursor shadow"
               type="submit">Log in
       </button>
     </div>

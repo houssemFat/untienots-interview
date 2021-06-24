@@ -6,7 +6,7 @@ import {
 
 import { Observable, of } from 'rxjs';
 
-const ACCOUNTS_MOCK: any = {
+export const ACCOUNTS_MOCK: any = {
   "user@untienots.com": {
     role: 'user'
   },

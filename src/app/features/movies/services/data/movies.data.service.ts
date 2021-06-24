@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
 import { ListMoviesParams, MoviesApiService } from "../api/movies.api.service";
 
 @Injectable({
