@@ -22,7 +22,7 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 Run `npm run cy:run` to execute the end-to-end tests with cypress. 
 
-## Running storybook and documentation tests [Documentation for e2e TODO]
+## Running storybook and documentation [Documentation for e2e TODO]
 
 Run `npm run storybook` to access to storybook stories.
 
